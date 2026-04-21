@@ -1,72 +1,145 @@
-function Kontak() {
-  return (
-    <div className="min-h-screen bg-[linear-gradient(180deg,#f8fafc_0%,#eef5ff_55%,#ffffff_100%)]">
-      <div className="max-w-6xl mx-auto px-6 py-14">
-        <div className="max-w-4xl mx-auto text-center mb-12">
-          <p className="text-sm uppercase tracking-[0.25em] text-blue-700 font-semibold mb-3">
-            Kontak
-          </p>
+const WHATSAPP_NUMBER = '6289668597807'
+const EMAIL_ADDRESS = 'bagussatria79@gmail.com'
+const MAPS_QUERY = 'Laboratorium Elektronika dan Instrumentasi, Yogyakarta'
+const ALAMAT_LENGKAP =
+  'Laboratorium Elektronika dan Instrumentasi, Gedung XYZ, Kampus ABC, Yogyakarta'
 
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">
+function Kontak() {
+  const whatsappMessage =
+    'Halo admin, saya ingin bertanya terkait layanan laboratorium.'
+  const emailSubject = 'Pertanyaan Layanan Laboratorium'
+  const emailBody =
+    'Halo admin,\n\nSaya ingin bertanya terkait layanan laboratorium.\n\nTerima kasih.'
+
+  const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
+    whatsappMessage
+  )}`
+
+  const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${EMAIL_ADDRESS}&su=${encodeURIComponent(
+    emailSubject
+  )}&body=${encodeURIComponent(emailBody)}`
+
+  const mapsEmbedUrl = `https://www.google.com/maps?q=${encodeURIComponent(
+    MAPS_QUERY
+  )}&z=15&output=embed`
+
+  const mapsOpenUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+    MAPS_QUERY
+  )}`
+
+  return (
+    <section className="min-h-screen bg-[#efefef] px-4 py-6 md:px-6 lg:px-8">
+      <div className="mx-auto max-w-7xl">
+        <div className="mb-6 rounded-md bg-white p-5 shadow-sm ring-1 ring-slate-200 md:p-6">
+          <h1 className="text-2xl font-bold text-slate-900 md:text-3xl">
             Hubungi Kami
           </h1>
-
-          <p className="text-gray-700 leading-8">
-            Untuk informasi lebih lanjut mengenai kegiatan, layanan, maupun
-            penggunaan laboratorium, silakan hubungi kami melalui informasi
-            berikut.
+          <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600">
+            Untuk informasi layanan, peminjaman alat, atau peminjaman ruangan,
+            silakan hubungi admin melalui WhatsApp, Gmail, atau kunjungi lokasi laboratorium.
           </p>
         </div>
 
-        <div className="grid gap-8 md:grid-cols-2">
-          <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
-            <h2 className="text-2xl font-bold mb-5">Informasi Kontak</h2>
+        <div className="grid gap-6 lg:grid-cols-[0.95fr_1.05fr]">
+          <div className="space-y-6">
+            <div className="grid gap-4 md:grid-cols-2">
+              <a
+                href={whatsappUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="rounded-md bg-white p-5 shadow-sm ring-1 ring-slate-200 transition hover:-translate-y-1 hover:ring-green-300"
+              >
+                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-green-50 text-green-600">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                    className="h-6 w-6"
+                  >
+                    <path d="M12.04 2C6.56 2 2.1 6.44 2.1 11.92c0 1.76.46 3.48 1.34 5L2 22l5.23-1.37a9.88 9.88 0 0 0 4.8 1.23h.01c5.48 0 9.93-4.45 9.93-9.93C21.97 6.45 17.52 2 12.04 2Zm0 18.18h-.01a8.2 8.2 0 0 1-4.17-1.14l-.3-.18-3.1.81.83-3.02-.2-.31a8.17 8.17 0 0 1-1.27-4.42c0-4.52 3.68-8.2 8.21-8.2 2.19 0 4.24.85 5.79 2.4a8.13 8.13 0 0 1 2.41 5.8c0 4.52-3.69 8.21-8.19 8.21Zm4.5-6.12c-.25-.12-1.47-.72-1.7-.8-.23-.09-.4-.12-.57.12-.17.24-.66.8-.81.96-.15.17-.3.18-.55.06-.25-.12-1.06-.39-2.02-1.25a7.58 7.58 0 0 1-1.4-1.75c-.15-.24-.02-.37.11-.49.11-.11.25-.3.37-.45.12-.15.16-.25.25-.42.08-.17.04-.31-.02-.43-.06-.12-.57-1.36-.77-1.86-.2-.49-.41-.42-.57-.43h-.49c-.17 0-.43.06-.65.31-.23.24-.86.84-.86 2.04s.88 2.36 1 2.52c.12.17 1.73 2.65 4.2 3.71.59.25 1.05.4 1.41.51.59.19 1.13.16 1.56.1.47-.07 1.47-.6 1.68-1.17.21-.57.21-1.06.15-1.17-.06-.11-.23-.17-.48-.29Z" />
+                  </svg>
+                </div>
 
-            <div className="space-y-5 text-gray-700 leading-8">
-              <div>
-                <p className="font-semibold text-slate-900">Alamat</p>
-                <p>
-                  Departemen Ilmu Komputer dan Elektronika
-                  <br />
-                  FMIPA Universitas Gadjah Mada
+                <h2 className="text-lg font-bold text-slate-900">WhatsApp</h2>
+                <p className="mt-2 text-sm leading-6 text-slate-600">
+                  Kirim pertanyaan atau kebutuhan administrasi melalui Whatsapp.
                 </p>
-              </div>
+                <p className="mt-4 text-sm font-semibold text-green-600">
+                  Chat via WhatsApp →
+                </p>
+              </a>
 
-              <div>
-                <p className="font-semibold text-slate-900">Email</p>
-                <p>lab-elins@ugm.ac.id</p>
-              </div>
+              <a
+                href={gmailUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="rounded-md bg-white p-5 shadow-sm ring-1 ring-slate-200 transition hover:-translate-y-1 hover:ring-blue-300"
+              >
+                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-blue-50 text-blue-600">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                    className="h-6 w-6"
+                  >
+                    <path d="M1.5 6.75A2.25 2.25 0 0 1 3.75 4.5h16.5a2.25 2.25 0 0 1 2.25 2.25v10.5a2.25 2.25 0 0 1-2.25 2.25H3.75A2.25 2.25 0 0 1 1.5 17.25V6.75Zm2.57-.75 7.18 5.38a1.25 1.25 0 0 0 1.5 0L19.93 6H4.07Z" />
+                  </svg>
+                </div>
 
-              <div>
-                <p className="font-semibold text-slate-900">Telepon</p>
-                <p>(0274) xxxxxxx</p>
+                <h2 className="text-lg font-bold text-slate-900">Gmail</h2>
+                <p className="mt-2 text-sm leading-6 text-slate-600">
+                  Kirim pertanyaan atau kebutuhan administrasi melalui Gmail.
+                </p>
+                <p className="mt-4 text-sm font-semibold text-blue-600">
+                  Kirim via Gmail →
+                </p>
+              </a>
+            </div>
+
+            <div className="rounded-md bg-white p-5 shadow-sm ring-1 ring-slate-200 md:p-6">
+              <h2 className="text-lg font-bold text-slate-900">Lokasi</h2>
+              <p className="mt-3 text-sm leading-6 text-slate-600">
+                {ALAMAT_LENGKAP}
+              </p>
+
+              <div className="mt-5 flex flex-wrap gap-3">
+                <a
+                  href={mapsOpenUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center rounded-md bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
+                >
+                  Buka Google Maps
+                </a>
+
+                <a
+                  href={whatsappUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center rounded-md border border-slate-200 px-5 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+                >
+                  Hubungi Admin
+                </a>
               </div>
             </div>
           </div>
 
-          <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
-            <h2 className="text-2xl font-bold mb-5">Jam Operasional</h2>
-
-            <div className="space-y-5 text-gray-700 leading-8">
-              <div>
-                <p className="font-semibold text-slate-900">Hari Kerja</p>
-                <p>Senin – Jumat</p>
-              </div>
-
-              <div>
-                <p className="font-semibold text-slate-900">Jam Layanan</p>
-                <p>08.00 – 16.00 WIB</p>
-              </div>
-
-              <div>
-                <p className="font-semibold text-slate-900">Keterangan</p>
-                <p>Sabtu, Minggu, dan hari libur nasional tutup.</p>
-              </div>
+          <div className="rounded-md bg-white p-3 shadow-sm ring-1 ring-slate-200 md:p-4">
+            <div className="overflow-hidden rounded-md">
+              <iframe
+                title="Lokasi Laboratorium"
+                src={mapsEmbedUrl}
+                width="100%"
+                height="100%"
+                className="min-h-[420px] w-full border-0"
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+              />
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </section>
   )
 }
 
