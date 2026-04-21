@@ -11,17 +11,21 @@ Frontend website Laboratorium Riset Elektronika dan Instrumentasi.
 
 1. Clone repository
 
-git clone https://github.com/nijika1ji/nyoba_web.git
+   git clone https://github.com/nijika1ji/nyoba_web.git
 
-2. Masuk ke folder project
-misal cd nyoba_web
+3. Masuk ke folder project
+  
+   misal cd nyoba_web
 
 3. Install dependency
-npm install
-   
-4. Jalankan project
-npm run dev
 
-5. Buka di browser
-http://localhost:5173
-7. 
+   npm install
+   
+5. Jalankan project
+
+   npm run dev
+
+7. Buka di browser
+
+   http://localhost:5173
+   
