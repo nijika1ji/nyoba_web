@@ -15,7 +15,7 @@ Frontend website Laboratorium Riset Elektronika dan Instrumentasi.
 
 3. Masuk ke folder project
   
-   misal cd nyoba_web/web-lab-elins
+   misal cd nyoba_web
 
 3. Install dependency
 
