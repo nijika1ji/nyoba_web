@@ -4,8 +4,7 @@ Frontend website Laboratorium Riset Elektronika dan Instrumentasi.
 
 ## Requirement
 
-- Node.js
-- npm
+- Install Node.js terlebih dahulu
 
 ## Cara Menjalankan Project
 
@@ -28,4 +27,13 @@ Frontend website Laboratorium Riset Elektronika dan Instrumentasi.
 7. Buka di browser
 
    http://localhost:5173
-   
+
+
+## Cara simpen hasil revisi/perubahan
+   git status
+
+   git add .
+
+   git commit -m "pesan revisi"
+
+   git push origin main
