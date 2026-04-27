@@ -143,6 +143,7 @@ function AjukanPeminjamanAlat() {
               value={form.nama}
               onChange={handleChange}
               placeholder="Masukkan nama lengkap"
+              required
             />
             <Field
               label="NIM / NIP"
@@ -150,13 +151,16 @@ function AjukanPeminjamanAlat() {
               value={form.identitas}
               onChange={handleChange}
               placeholder="Masukkan NIM atau NIP"
+              required
             />
             <Field
               label="Kontak"
               name="kontak"
+              type="tel"
               value={form.kontak}
               onChange={handleChange}
               placeholder="Nomor HP / email"
+              required
             />
             <Field
               label="Jumlah Unit"
@@ -166,19 +170,23 @@ function AjukanPeminjamanAlat() {
               max={alat.tersedia || 1}
               value={form.jumlah}
               onChange={handleChange}
+              required
+              isInvalid={isJumlahInvalid}
             />
 
             <div className="md:col-span-2">
-              <label className="mb-2 block text-sm font-semibold text-slate-700">
+              <label htmlFor="field-keperluan" className="mb-2 block text-sm font-semibold text-slate-700">
                 Keperluan
               </label>
               <textarea
+                id="field-keperluan"
                 name="keperluan"
                 value={form.keperluan}
                 onChange={handleChange}
                 rows={3}
                 placeholder="Tuliskan keperluan peminjaman"
                 className="w-full rounded-md border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:bg-white"
+                required
               />
             </div>
 
@@ -189,6 +197,7 @@ function AjukanPeminjamanAlat() {
               value={form.tanggalPinjam}
               onChange={handleChange}
               min={today}
+              required
             />
             <Field
               label="Tanggal Kembali"
@@ -197,6 +206,8 @@ function AjukanPeminjamanAlat() {
               value={form.tanggalKembali}
               onChange={handleChange}
               min={form.tanggalPinjam || today}
+              required
+              isInvalid={isTanggalInvalid}
             />
 
             <div className="md:col-span-2">
@@ -253,6 +264,8 @@ function Field({
   type = 'text',
   min,
   max,
+  required = false,
+  isInvalid = false,
 }) {
   const inputId = `field-${name}`
 
@@ -270,6 +283,8 @@ function Field({
         placeholder={placeholder}
         min={min}
         max={max}
+        required={required}
+        aria-invalid={isInvalid}
         className="w-full rounded-md border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:bg-white"
       />
     </div>

@@ -1,3 +1,5 @@
+import { motion as Motion } from 'framer-motion'
+
 function ProfilDosen() {
   const fadeUp = {
     hidden: { opacity: 0, y: 28 },
@@ -67,13 +69,13 @@ function ProfilDosen() {
       <section className="relative overflow-hidden bg-slate-950">
         <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800" />
 
-        <motion.div
+        <Motion.div
           className="absolute -left-16 top-8 h-72 w-72 rounded-full bg-blue-400/15 blur-3xl"
           animate={{ x: [0, 18, 0], y: [0, 12, 0] }}
           transition={{ duration: 9, repeat: Infinity, ease: 'easeInOut' }}
         />
 
-        <motion.div
+        <Motion.div
           className="absolute right-0 top-20 h-72 w-72 rounded-full bg-cyan-300/10 blur-3xl"
           animate={{ x: [0, -18, 0], y: [0, -12, 0] }}
           transition={{ duration: 10, repeat: Infinity, ease: 'easeInOut' }}
@@ -82,54 +84,54 @@ function ProfilDosen() {
         <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.04)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.04)_1px,transparent_1px)] bg-[size:52px_52px] opacity-[0.06]" />
 
         <div className="relative z-10 mx-auto max-w-6xl px-6 pt-32 pb-28">
-          <motion.div
+          <Motion.div
             variants={staggerWrap}
             initial="hidden"
             animate="show"
             className="max-w-4xl"
           >
-            <motion.p
+            <Motion.p
               variants={fadeUp}
               className="mb-5 text-sm font-semibold uppercase tracking-[0.35em] text-blue-300"
             >
               Profil Dosen
-            </motion.p>
+            </Motion.p>
 
-            <motion.h1
+            <Motion.h1
               variants={fadeUp}
               className="text-4xl font-extrabold leading-tight text-white md:text-6xl"
             >
               Dosen dan Pengampu Laboratorium ELINS
-            </motion.h1>
+            </Motion.h1>
 
-            <motion.p
+            <Motion.p
               variants={fadeUp}
               className="mt-6 max-w-3xl text-base leading-8 text-slate-300 md:text-lg"
             >
               Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer
               posuere erat a ante venenatis dapibus posuere velit aliquet. Donec
               ullamcorper nulla non metus auctor fringilla.
-            </motion.p>
-          </motion.div>
+            </Motion.p>
+          </Motion.div>
         </div>
       </section>
 
       {/* CARD DOSEN */}
       <section className="relative z-20 overflow-hidden rounded-t-[2.5rem] bg-gradient-to-b from-slate-100 via-blue-50 to-white">
-        <motion.div
+        <Motion.div
           className="absolute -left-24 top-8 h-72 w-72 rounded-full bg-blue-200/25 blur-3xl"
           animate={{ x: [0, 16, 0], y: [0, 10, 0] }}
           transition={{ duration: 9, repeat: Infinity, ease: 'easeInOut' }}
         />
 
-        <motion.div
+        <Motion.div
           className="absolute -right-24 top-20 h-80 w-80 rounded-full bg-sky-200/20 blur-3xl"
           animate={{ x: [0, -16, 0], y: [0, -10, 0] }}
           transition={{ duration: 10, repeat: Infinity, ease: 'easeInOut' }}
         />
 
         <div className="relative z-10 mx-auto max-w-6xl px-6 pt-20 pb-24">
-          <motion.div
+          <Motion.div
             initial={{ opacity: 0, y: 24 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.2 }}
@@ -146,9 +148,9 @@ function ProfilDosen() {
               Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer
               posuere erat a ante venenatis dapibus posuere velit aliquet.
             </p>
-          </motion.div>
+          </Motion.div>
 
-          <motion.div
+          <Motion.div
             variants={staggerWrap}
             initial="hidden"
             whileInView="show"
@@ -156,7 +158,7 @@ function ProfilDosen() {
             className="grid gap-6 md:grid-cols-2 xl:grid-cols-4"
           >
             {dosenList.map((dosen) => (
-              <motion.div
+              <Motion.div
                 key={dosen.nama}
                 variants={cardReveal}
                 whileHover={{ y: -6 }}
@@ -185,9 +187,9 @@ function ProfilDosen() {
                   </div>
                   <p className="mt-2 text-sm text-slate-600">{dosen.email}</p>
                 </div>
-              </motion.div>
+              </Motion.div>
             ))}
-          </motion.div>
+          </Motion.div>
         </div>
       </section>
     </main>

@@ -1,3 +1,4 @@
+import { motion as Motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import projects from '../data/projects'
 
@@ -62,13 +63,13 @@ function ProjectPageTemplate({
       <section className="relative overflow-hidden bg-slate-950">
         <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800" />
 
-        <motion.div
+        <Motion.div
           className={`absolute -left-16 top-8 h-72 w-72 rounded-full blur-3xl ${tone.blobOne}`}
           animate={{ x: [0, 18, 0], y: [0, 12, 0] }}
           transition={{ duration: 9, repeat: Infinity, ease: 'easeInOut' }}
         />
 
-        <motion.div
+        <Motion.div
           className={`absolute right-0 top-20 h-72 w-72 rounded-full blur-3xl ${tone.blobTwo}`}
           animate={{ x: [0, -18, 0], y: [0, -12, 0] }}
           transition={{ duration: 10, repeat: Infinity, ease: 'easeInOut' }}
@@ -77,52 +78,52 @@ function ProjectPageTemplate({
         <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.04)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.04)_1px,transparent_1px)] bg-[size:52px_52px] opacity-[0.06]" />
 
         <div className="relative z-10 mx-auto max-w-6xl px-6 pt-32 pb-28">
-          <motion.div
+          <Motion.div
             variants={staggerWrap}
             initial="hidden"
             animate="show"
             className="max-w-4xl"
           >
-            <motion.p
+            <Motion.p
               variants={fadeUp}
               className={`mb-5 text-sm font-semibold uppercase tracking-[0.35em] ${tone.accentText}`}
             >
               {kicker}
-            </motion.p>
+            </Motion.p>
 
-            <motion.h1
+            <Motion.h1
               variants={fadeUp}
               className="text-4xl font-extrabold leading-tight text-white md:text-6xl"
             >
               {title}
-            </motion.h1>
+            </Motion.h1>
 
-            <motion.p
+            <Motion.p
               variants={fadeUp}
               className="mt-6 max-w-3xl text-base leading-8 text-slate-300 md:text-lg"
             >
               {description}
-            </motion.p>
-          </motion.div>
+            </Motion.p>
+          </Motion.div>
         </div>
       </section>
 
       {/* LIST SECTION */}
       <section className="relative z-20 -mt-6 overflow-hidden rounded-t-[3.5rem] bg-gradient-to-b from-slate-100 via-blue-50 to-white">
-        <motion.div
+        <Motion.div
           className={`absolute -left-24 top-8 h-72 w-72 rounded-full blur-3xl ${tone.sectionBlobOne}`}
           animate={{ x: [0, 16, 0], y: [0, 10, 0] }}
           transition={{ duration: 9, repeat: Infinity, ease: 'easeInOut' }}
         />
 
-        <motion.div
+        <Motion.div
           className={`absolute -right-24 top-20 h-80 w-80 rounded-full blur-3xl ${tone.sectionBlobTwo}`}
           animate={{ x: [0, -16, 0], y: [0, -10, 0] }}
           transition={{ duration: 10, repeat: Infinity, ease: 'easeInOut' }}
         />
 
         <div className="relative z-10 mx-auto max-w-6xl px-6 pt-20 pb-24">
-          <motion.div
+          <Motion.div
             initial={{ opacity: 0, y: 24 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.2 }}
@@ -150,7 +151,7 @@ function ProjectPageTemplate({
                 {filteredProjects.length}
               </div>
             </div>
-          </motion.div>
+          </Motion.div>
 
           {filteredProjects.length === 0 ? (
             <div className="rounded-3xl border border-dashed border-slate-300 bg-white/80 px-6 py-14 text-center shadow-sm">
@@ -163,7 +164,7 @@ function ProjectPageTemplate({
               </p>
             </div>
           ) : (
-            <motion.div
+            <Motion.div
               variants={staggerWrap}
               initial="hidden"
               whileInView="show"
@@ -171,7 +172,7 @@ function ProjectPageTemplate({
               className="grid gap-6 md:grid-cols-2"
             >
               {filteredProjects.map((item) => (
-                <motion.article
+                <Motion.article
                   key={item.id}
                   variants={cardReveal}
                   whileHover={{ y: -6 }}
@@ -227,9 +228,9 @@ function ProjectPageTemplate({
                       </Link>
                     </div>
                   </div>
-                </motion.article>
+                </Motion.article>
               ))}
-            </motion.div>
+            </Motion.div>
           )}
         </div>
       </section>

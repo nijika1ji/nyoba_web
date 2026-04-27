@@ -1,3 +1,4 @@
+import { motion as Motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import projects from '../data/projects'
 
@@ -36,7 +37,7 @@ function Home() {
     <div className="overflow-x-hidden bg-slate-50 text-slate-900">
       {/* HERO */}
       <section className="relative min-h-[88vh] overflow-hidden">
-        <motion.div
+        <Motion.div
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
           style={{ backgroundImage: "url('/bg-gedung.jpg')" }}
           initial={{ scale: 1 }}
@@ -51,7 +52,7 @@ function Home() {
 
         <div className="absolute inset-0 bg-gradient-to-r from-slate-950/90 via-slate-900/70 to-slate-900/35" />
 
-        <motion.div
+        <Motion.div
           className="absolute inset-0 bg-[radial-gradient(circle_at_left_top,rgba(59,130,246,0.16),transparent_30%)]"
           animate={{ x: [0, 20, 0], y: [0, -12, 0], opacity: [0.6, 0.9, 0.6] }}
           transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
@@ -60,27 +61,27 @@ function Home() {
         <div className="absolute inset-x-0 bottom-0 h-36 bg-gradient-to-t from-slate-50 to-transparent" />
 
         <div className="relative z-10 mx-auto flex min-h-[88vh] max-w-6xl items-center px-6 pt-28 pb-20">
-          <motion.div
+          <Motion.div
             className="max-w-3xl text-left text-white"
             variants={staggerWrap}
             initial="hidden"
             animate="show"
           >
-            <motion.p
+            <Motion.p
               variants={fadeUp}
               className="mb-5 text-sm font-semibold uppercase tracking-[0.35em] text-blue-200"
             >
               ELINS FMIPA UGM
-            </motion.p>
+            </Motion.p>
 
-            <motion.h1
+            <Motion.h1
               variants={fadeUp}
               className="text-4xl md:text-6xl font-extrabold leading-tight mb-6 text-white"
             >
               Laboratorium Riset Elektronika dan Instrumentasi
-            </motion.h1>
+            </Motion.h1>
 
-            <motion.p
+            <Motion.p
               variants={fadeUp}
               className="mt-6 max-w-2xl text-base leading-8 text-slate-200 md:text-lg"
             >
@@ -90,24 +91,24 @@ function Home() {
               elektronika, instrumentasi, jaringan sensor, serta sistem kendali
               dan teknologinya untuk mendukung pendidikan, penelitian, dan
               pengabdian kepada masyarakat.
-            </motion.p>
+            </Motion.p>
 
-            <motion.div
+            <Motion.div
               variants={fadeUp}
               className="mt-8 h-1 w-24 rounded-full bg-white/70"
             />
-          </motion.div>
+          </Motion.div>
         </div>
       </section>
 
       {/* PROJECT SECTION */}
       <section className="relative -mt-8 z-20 overflow-hidden rounded-t-[2.5rem] bg-gradient-to-b from-slate-100 via-blue-50 to-white">
-        <motion.div
+        <Motion.div
           className="absolute -left-24 top-8 h-72 w-72 rounded-full bg-blue-200/25 blur-3xl"
           animate={{ x: [0, 18, 0], y: [0, 12, 0] }}
           transition={{ duration: 9, repeat: Infinity, ease: 'easeInOut' }}
         />
-        <motion.div
+        <Motion.div
           className="absolute -right-24 top-20 h-80 w-80 rounded-full bg-sky-200/20 blur-3xl"
           animate={{ x: [0, -18, 0], y: [0, -10, 0] }}
           transition={{ duration: 10, repeat: Infinity, ease: 'easeInOut' }}
@@ -115,7 +116,7 @@ function Home() {
         <div className="absolute inset-x-0 top-0 h-px bg-white/80" />
 
         <div className="relative z-10 mx-auto max-w-6xl px-6 pt-20 pb-24">
-          <motion.div
+          <Motion.div
             className="mb-12 text-center"
             initial={{ opacity: 0, y: 28 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -135,9 +136,9 @@ function Home() {
               penelitian dan pengabdian di Laboratorium Riset Elektronika dan
               Instrumentasi.
             </p>
-          </motion.div>
+          </Motion.div>
 
-          <motion.div
+          <Motion.div
             className="space-y-5"
             variants={staggerWrap}
             initial="hidden"
@@ -152,7 +153,7 @@ function Home() {
                 : 'bg-emerald-100 text-emerald-700'
 
               return (
-                <motion.div
+                <Motion.div
                   key={item.id}
                   variants={cardReveal}
                   className="group mx-auto max-w-5xl overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-lg"
@@ -194,10 +195,10 @@ function Home() {
                       </p>
                     </div>
                   </div>
-                </motion.div>
+                </Motion.div>
               )
             })}
-          </motion.div>
+          </Motion.div>
         </div>
       </section>
     </div>
