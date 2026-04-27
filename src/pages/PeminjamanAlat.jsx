@@ -10,11 +10,13 @@ import {
 function PeminjamanAlat() {
   const [search, setSearch] = useState('')
 
+  const normalizedSearch = search.trim().toLowerCase()
+
   const filteredAlat = useMemo(() => {
     return alatLab.filter((item) =>
-      item.nama.toLowerCase().includes(search.toLowerCase())
+      item.nama.toLowerCase().includes(normalizedSearch)
     )
-  }, [search])
+  }, [normalizedSearch])
 
   return (
     <div className="min-h-screen bg-[linear-gradient(180deg,#f8fafc_0%,#eef5ff_45%,#ffffff_100%)]">
@@ -34,11 +36,15 @@ function PeminjamanAlat() {
           </p>
 
           <div className="mx-auto mt-8 max-w-3xl text-left">
-            <label className="mb-2 block text-sm font-semibold text-slate-700">
+            <label
+              htmlFor="search-alat"
+              className="mb-2 block text-sm font-semibold text-slate-700"
+            >
               Cari nama alat
             </label>
 
             <input
+              id="search-alat"
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
@@ -50,7 +56,21 @@ function PeminjamanAlat() {
 
         {filteredAlat.length === 0 ? (
           <div className="rounded-3xl border border-dashed border-slate-300 bg-white p-10 text-center text-slate-500 shadow-sm">
-            Alat tidak ditemukan.
+            <p className="text-base font-semibold text-slate-700">Alat tidak ditemukan.</p>
+            {normalizedSearch ? (
+              <div className="mt-3 space-y-3">
+                <p>
+                  Tidak ada hasil untuk kata kunci <span className="font-semibold">"{search.trim()}"</span>.
+                </p>
+                <button
+                  type="button"
+                  onClick={() => setSearch('')}
+                  className="inline-flex rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-100"
+                >
+                  Hapus pencarian
+                </button>
+              </div>
+            ) : null}
           </div>
         ) : (
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-5">

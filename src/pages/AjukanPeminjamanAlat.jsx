@@ -18,6 +18,10 @@ function AjukanPeminjamanAlat() {
     catatan: '',
   })
 
+  const [submitted, setSubmitted] = useState(false)
+
+  const today = new Date().toISOString().split('T')[0]
+
   if (!alat) {
     return (
       <section className="min-h-screen bg-[#efefef] px-4 py-6 md:px-6 lg:px-8">
@@ -64,15 +68,20 @@ function AjukanPeminjamanAlat() {
     event.preventDefault()
     if (isInvalid) return
 
-    alert(
-      `Pengajuan frontend berhasil dibuat.\n\n` +
-        `Alat: ${alat.nama}\n` +
-        `Nama: ${form.nama}\n` +
-        `Jumlah: ${form.jumlah}\n` +
-        `Tanggal pinjam: ${form.tanggalPinjam}\n` +
-        `Tanggal kembali: ${form.tanggalKembali}\n\n` +
-        `Backend belum dihubungkan.`
-    )
+    setSubmitted(true)
+    setTimeout(() => {
+      setForm({
+        nama: '',
+        identitas: '',
+        kontak: '',
+        keperluan: '',
+        jumlah: 1,
+        tanggalPinjam: '',
+        tanggalKembali: '',
+        catatan: '',
+      })
+      setSubmitted(false)
+    }, 4000)
   }
 
   return (
@@ -94,6 +103,12 @@ function AjukanPeminjamanAlat() {
           <p className="mt-2 text-sm text-slate-500">
             Alat yang dipilih: <span className="font-semibold">{alat.nama}</span>
           </p>
+
+          {submitted && (
+            <div className="mt-4 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
+              <strong>Pengajuan berhasil dikirim!</strong> Form akan direset otomatis. (Backend belum dihubungkan, ini hanya demo frontend.)
+            </div>
+          )}
 
           <form onSubmit={handleSubmit} className="mt-6 grid gap-4 md:grid-cols-2">
             <Field
@@ -147,6 +162,7 @@ function AjukanPeminjamanAlat() {
               type="date"
               value={form.tanggalPinjam}
               onChange={handleChange}
+              min={today}
             />
             <Field
               label="Tanggal Kembali"
@@ -154,6 +170,7 @@ function AjukanPeminjamanAlat() {
               type="date"
               value={form.tanggalKembali}
               onChange={handleChange}
+              min={form.tanggalPinjam || today}
             />
 
             <div className="md:col-span-2">
@@ -211,12 +228,15 @@ function Field({
   min,
   max,
 }) {
+  const inputId = `field-${name}`
+
   return (
     <div>
-      <label className="mb-2 block text-sm font-semibold text-slate-700">
+      <label htmlFor={inputId} className="mb-2 block text-sm font-semibold text-slate-700">
         {label}
       </label>
       <input
+        id={inputId}
         type={type}
         name={name}
         value={value}
