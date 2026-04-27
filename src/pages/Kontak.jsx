@@ -1,15 +1,13 @@
 const WHATSAPP_NUMBER = '6289668597807'
 const EMAIL_ADDRESS = 'bagussatria79@gmail.com'
-const MAPS_QUERY = 'Laboratorium Elektronika dan Instrumentasi, Yogyakarta'
-const ALAMAT_LENGKAP =
-  'Laboratorium Elektronika dan Instrumentasi, Gedung XYZ, Kampus ABC, Yogyakarta'
+const MAPS_QUERY = 'Electronics and Instrumentation Research Laboratory, Yogyakarta'
 
 function Kontak() {
   const whatsappMessage =
     'Halo admin, saya ingin bertanya terkait layanan laboratorium.'
   const emailSubject = 'Pertanyaan Layanan Laboratorium'
   const emailBody =
-    'Halo admin,\n\nSaya ingin bertanya terkait layanan laboratorium.\n\nTerima kasih.'
+    'Halo admin,%0D%0A%0D%0ASaya ingin bertanya terkait layanan laboratorium.%0D%0A%0D%0ATerima kasih.'
 
   const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
     whatsappMessage
@@ -17,7 +15,7 @@ function Kontak() {
 
   const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${EMAIL_ADDRESS}&su=${encodeURIComponent(
     emailSubject
-  )}&body=${encodeURIComponent(emailBody)}`
+  )}&body=${emailBody}`
 
   const mapsEmbedUrl = `https://www.google.com/maps?q=${encodeURIComponent(
     MAPS_QUERY
@@ -28,28 +26,29 @@ function Kontak() {
   )}`
 
   return (
-    <section className="min-h-screen bg-[#efefef] px-4 py-6 md:px-6 lg:px-8">
-      <div className="mx-auto max-w-7xl">
-        <div className="mb-6 rounded-md bg-white p-5 shadow-sm ring-1 ring-slate-200 md:p-6">
-          <h1 className="text-2xl font-bold text-slate-900 md:text-3xl">
+    <div className="min-h-screen bg-[linear-gradient(180deg,#f8fafc_0%,#eef5ff_45%,#ffffff_100%)]">
+      <div className="mx-auto max-w-6xl px-6 py-14">
+        <div className="mx-auto mb-12 max-w-4xl text-center">
+          <p className="mb-3 text-sm font-semibold uppercase tracking-[0.25em] text-blue-700">
+            Kontak
+          </p>
+
+          <h1 className="mb-4 text-4xl font-bold text-slate-950 md:text-5xl">
             Hubungi Kami
           </h1>
-          <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600">
+
+          <p className="mx-auto max-w-3xl text-slate-700 leading-8">
             Untuk informasi layanan, peminjaman alat, atau peminjaman ruangan,
-            silakan hubungi admin melalui WhatsApp, Gmail, atau kunjungi lokasi laboratorium.
+            silakan hubungi admin melalui WhatsApp, Gmail, atau kunjungi lokasi
+            laboratorium.
           </p>
         </div>
 
-        <div className="grid gap-6 lg:grid-cols-[0.95fr_1.05fr]">
+        <div className="grid gap-6 lg:grid-cols-[1fr_1.2fr]">
           <div className="space-y-6">
-            <div className="grid gap-4 md:grid-cols-2">
-              <a
-                href={whatsappUrl}
-                target="_blank"
-                rel="noreferrer"
-                className="rounded-md bg-white p-5 shadow-sm ring-1 ring-slate-200 transition hover:-translate-y-1 hover:ring-green-300"
-              >
-                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-green-50 text-green-600">
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
+              <div className="rounded-3xl border border-slate-200 bg-white p-7 shadow-sm transition hover:-translate-y-1 hover:shadow-lg">
+                <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-full bg-green-50 text-green-600">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 24 24"
@@ -60,22 +59,24 @@ function Kontak() {
                   </svg>
                 </div>
 
-                <h2 className="text-lg font-bold text-slate-900">WhatsApp</h2>
-                <p className="mt-2 text-sm leading-6 text-slate-600">
-                  Kirim pertanyaan atau kebutuhan administrasi melalui Whatsapp.
-                </p>
-                <p className="mt-4 text-sm font-semibold text-green-600">
-                  Chat via WhatsApp →
-                </p>
-              </a>
+                <h2 className="text-xl font-bold text-slate-950">WhatsApp</h2>
 
-              <a
-                href={gmailUrl}
-                target="_blank"
-                rel="noreferrer"
-                className="rounded-md bg-white p-5 shadow-sm ring-1 ring-slate-200 transition hover:-translate-y-1 hover:ring-blue-300"
-              >
-                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-blue-50 text-blue-600">
+                <p className="mt-3 text-sm leading-7 text-slate-600">
+                  Kirim pertanyaan atau kebutuhan administrasi melalui WhatsApp.
+                </p>
+
+                <a
+                  href={whatsappUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="mt-5 inline-block text-sm font-bold text-emerald-600 transition hover:text-emerald-700"
+                >
+                  Chat via WhatsApp →
+                </a>
+              </div>
+
+              <div className="rounded-3xl border border-slate-200 bg-white p-7 shadow-sm transition hover:-translate-y-1 hover:shadow-lg">
+                <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-full bg-blue-50 text-blue-600">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 24 24"
@@ -86,28 +87,38 @@ function Kontak() {
                   </svg>
                 </div>
 
-                <h2 className="text-lg font-bold text-slate-900">Gmail</h2>
-                <p className="mt-2 text-sm leading-6 text-slate-600">
+                <h2 className="text-xl font-bold text-slate-950">Gmail</h2>
+
+                <p className="mt-3 text-sm leading-7 text-slate-600">
                   Kirim pertanyaan atau kebutuhan administrasi melalui Gmail.
                 </p>
-                <p className="mt-4 text-sm font-semibold text-blue-600">
+
+                <a
+                  href={gmailUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="mt-5 inline-block text-sm font-bold text-blue-600 transition hover:text-blue-700"
+                >
                   Kirim via Gmail →
-                </p>
-              </a>
+                </a>
+              </div>
             </div>
 
-            <div className="rounded-md bg-white p-5 shadow-sm ring-1 ring-slate-200 md:p-6">
-              <h2 className="text-lg font-bold text-slate-900">Lokasi</h2>
-              <p className="mt-3 text-sm leading-6 text-slate-600">
-                {ALAMAT_LENGKAP}
+            <div className="rounded-3xl border border-slate-200 bg-white p-7 shadow-sm">
+              <h2 className="text-xl font-bold text-slate-950">Lokasi</h2>
+
+              <p className="mt-4 text-sm leading-7 text-slate-600">
+                Laboratorium Elektronika dan Instrumentasi, Departemen Ilmu
+                Komputer dan Elektronika, FMIPA Universitas Gadjah Mada,
+                Yogyakarta.
               </p>
 
-              <div className="mt-5 flex flex-wrap gap-3">
+              <div className="mt-6 flex flex-wrap gap-3">
                 <a
                   href={mapsOpenUrl}
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex items-center rounded-md bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
+                  className="inline-block rounded-xl bg-slate-950 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
                 >
                   Buka Google Maps
                 </a>
@@ -116,7 +127,7 @@ function Kontak() {
                   href={whatsappUrl}
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex items-center rounded-md border border-slate-200 px-5 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+                  className="inline-block rounded-xl border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-800 transition hover:bg-slate-50"
                 >
                   Hubungi Admin
                 </a>
@@ -124,22 +135,18 @@ function Kontak() {
             </div>
           </div>
 
-          <div className="rounded-md bg-white p-3 shadow-sm ring-1 ring-slate-200 md:p-4">
-            <div className="overflow-hidden rounded-md">
-              <iframe
-                title="Lokasi Laboratorium"
-                src={mapsEmbedUrl}
-                width="100%"
-                height="100%"
-                className="min-h-[420px] w-full border-0"
-                loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
-              />
-            </div>
+          <div className="overflow-hidden rounded-3xl border border-slate-200 bg-white p-4 shadow-sm">
+            <iframe
+              src={mapsEmbedUrl}
+              title="Lokasi Laboratorium"
+              className="h-[520px] w-full rounded-2xl"
+              loading="lazy"
+              allowFullScreen
+            />
           </div>
         </div>
       </div>
-    </section>
+    </div>
   )
 }
 

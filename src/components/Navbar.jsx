@@ -9,12 +9,13 @@ function Navbar() {
   const [openLayanan, setOpenLayanan] = useState(false)
 
   const menuBase =
-    'relative px-4 py-3 rounded-xl text-white text-sm font-semibold uppercase tracking-wide transition duration-300'
+    'relative px-4 py-2.5 rounded-xl text-sm font-bold uppercase tracking-wide transition duration-300'
 
   const menuEffect =
-    "before:content-[''] before:absolute before:inset-0 before:rounded-xl before:bg-white/10 before:opacity-0 before:scale-95 before:transition-all before:duration-300 hover:before:opacity-100 hover:before:scale-100 hover:-translate-y-[1px]"
+    'text-white/80 hover:text-white hover:bg-slate-400/20 hover:shadow-sm'
 
-  const activeStyle = 'before:opacity-100 before:scale-100 bg-white/5'
+  const activeStyle =
+    'bg-slate-400/25 text-white shadow-sm backdrop-blur-sm'
 
   const isProjectActive = location.pathname.startsWith('/project')
   const isProfilActive = location.pathname.startsWith('/profil')
@@ -28,29 +29,33 @@ function Navbar() {
   }
 
   return (
-    <header className="sticky top-0 z-50">
-      <nav className="bg-[linear-gradient(90deg,#334155,#1e293b,#0f172a)] backdrop-blur-md border-b border-white/10">
-        <div className="max-w-7xl mx-auto px-4 md:px-6">
-          <div className="h-24 flex items-center justify-between">
-            <div className="flex items-center gap-3 min-w-0">
-              <div className="w-14 h-14 rounded-xl bg-white/10 border border-white/20 flex items-center justify-center overflow-hidden shrink-0">
-                <img
-                  src="/logo-lab.jpg"
-                  alt="Logo ELINS"
-                  className="w-10 h-10 object-contain"
-                />
-              </div>
+            <header className="sticky top-0 z-50">
+              <nav className="bg-[linear-gradient(90deg,#24384d,#16283c,#071426)] backdrop-blur-md border-b border-white/10 shadow-lg">
+                <div className="max-w-7xl mx-auto px-4 md:px-6">
+                  <div className="h-24 flex items-center justify-between">
+                    <Link to="/" className="flex items-center shrink-0">
+                      {/* LOGO: atur ukuran/posisi logo di sini */}
+                      <div className="flex h-[72px] w-[72px] shrink-0 items-center justify-center">
+                        <img
+                          src="/logo-lab.png"
+                          alt="Logo ELINS"
+                          className="h-[80px] w-auto object-contain translate-x-[8px] translate-y-[-5px]"
+                        />
+                      </div>
 
-              <div className="leading-tight text-white min-w-0">
-                <p className="text-2xl md:text-3xl font-extrabold tracking-wide truncate">
-                  ELINS
-                </p>
-                <p className="text-sm text-white/80 truncate">
-                  research laboratory
-                </p>
-              </div>
-            </div>
-
+                      {/* TEKS: atur ukuran/posisi tulisan di sini */}
+                      <div className="ml-[10px] flex flex-col justify-center leading-[0.92] translate-x-[0px] translate-y-[0px]">
+                        <p className="text-[18px] font-extrabold text-white md:text-[20px]">
+                          Laboratorium
+                        </p>
+                        <p className="text-[18px] font-extrabold text-white md:text-[20px]">
+                          Elektronika
+                        </p>
+                        <p className="text-[18px] font-extrabold text-white md:text-[20px]">
+                          dan Instrumentasi
+                        </p>
+                      </div>
+                    </Link>
             {/* Desktop menu */}
             <div className="hidden md:flex items-center gap-2">
               <NavLink
@@ -133,9 +138,15 @@ function Navbar() {
                     <span className="text-xs">▼</span>
                   </span>
                 </button>
-
-                <div className="absolute left-0 top-full pt-3 hidden group-hover:block">
+                  <div className="absolute left-0 top-full pt-3 hidden group-hover:block">
                   <div className="w-72 rounded-2xl bg-zinc-900/95 shadow-2xl border border-white/10 overflow-hidden">
+                    <Link
+                      to="/layanan"
+                      className="block px-6 py-4 text-white text-base font-semibold hover:bg-white/10 transition"
+                    >
+                      Informasi Layanan
+                    </Link>
+                    
                     <Link
                       to="/layanan/peminjaman-alat"
                       className="block px-6 py-4 text-white text-base font-semibold hover:bg-white/10 transition"
