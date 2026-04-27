@@ -95,8 +95,30 @@ function Home() {
 
             <Motion.div
               variants={fadeUp}
-              className="mt-8 h-1 w-24 rounded-full bg-white/70"
-            />
+              className="mt-8 flex flex-wrap items-center gap-4"
+            >
+              <Link
+                to="/layanan"
+                className="inline-flex items-center justify-center rounded-xl bg-amber-400 px-6 py-3 text-sm font-black uppercase text-black shadow-[0_4px_0_0_#92400e] transition hover:translate-y-[1px] hover:shadow-[0_3px_0_0_#92400e]"
+              >
+                Lihat Layanan
+              </Link>
+              <Link
+                to="/kontak"
+                className="inline-flex items-center justify-center rounded-xl border border-white/20 bg-white/10 px-6 py-3 text-sm font-bold uppercase text-white backdrop-blur-sm transition hover:bg-white/15"
+              >
+                Hubungi Admin
+              </Link>
+            </Motion.div>
+
+            <Motion.div
+              variants={fadeUp}
+              className="mt-8 grid max-w-2xl grid-cols-1 gap-3 sm:grid-cols-3"
+            >
+              <InfoPill label="Fokus" value="Elektronika & Instrumentasi" />
+              <InfoPill label="Layanan" value="Alat, Ruangan, Konsultasi" />
+              <InfoPill label="Dukungan" value="Akademik & Riset" />
+            </Motion.div>
           </Motion.div>
         </div>
       </section>
@@ -201,6 +223,17 @@ function Home() {
           </Motion.div>
         </div>
       </section>
+    </div>
+  )
+}
+
+function InfoPill({ label, value }) {
+  return (
+    <div className="rounded-2xl border border-white/15 bg-white/10 px-4 py-4 text-left backdrop-blur-sm">
+      <div className="text-xs font-semibold uppercase tracking-[0.2em] text-blue-100">
+        {label}
+      </div>
+      <div className="mt-2 text-sm font-semibold text-white">{value}</div>
     </div>
   )
 }

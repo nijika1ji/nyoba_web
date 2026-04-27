@@ -72,8 +72,9 @@ function Navbar() {
                   className={`${menuBase} ${menuEffect} ${
                     isProjectActive ? activeStyle : ''
                   } focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50`}
-                  aria-haspopup="true"
-                  aria-expanded="false"
+                  aria-haspopup="menu"
+                  aria-expanded={isProjectActive}
+                  aria-label="Buka submenu project"
                 >
                   <span className="relative z-10 flex items-center gap-2">
                     Project
@@ -104,8 +105,9 @@ function Navbar() {
                   className={`${menuBase} ${menuEffect} ${
                     isProfilActive ? activeStyle : ''
                   } focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50`}
-                  aria-haspopup="true"
-                  aria-expanded="false"
+                  aria-haspopup="menu"
+                  aria-expanded={isProfilActive}
+                  aria-label="Buka submenu profil"
                 >
                   <span className="relative z-10 flex items-center gap-2">
                     Profil
@@ -136,8 +138,9 @@ function Navbar() {
                   className={`${menuBase} ${menuEffect} ${
                     isLayananActive ? activeStyle : ''
                   } focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50`}
-                  aria-haspopup="true"
-                  aria-expanded="false"
+                  aria-haspopup="menu"
+                  aria-expanded={isLayananActive}
+                  aria-label="Buka submenu layanan"
                 >
                   <span className="relative z-10 flex items-center gap-2">
                     Layanan

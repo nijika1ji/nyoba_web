@@ -2,8 +2,8 @@ import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import alatLab from '../data/alatLab'
 import {
+  getStatusBadgeClass,
   getStatusLabel,
-  getStatusTextClass,
   slugify,
 } from '../utils/alatHelpers'
 
@@ -34,6 +34,21 @@ function PeminjamanAlat() {
             Pilih alat dari katalog untuk melihat detail, spesifikasi, dan
             mengajukan peminjaman.
           </p>
+
+          <div className="mx-auto mt-6 flex max-w-3xl flex-wrap items-center justify-center gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-600 shadow-sm">
+            <span>
+              Menampilkan <span className="font-bold text-slate-900">{filteredAlat.length}</span> dari <span className="font-bold text-slate-900">{alatLab.length}</span> alat
+            </span>
+            {normalizedSearch ? (
+              <span className="rounded-full bg-blue-50 px-3 py-1 font-semibold text-blue-700">
+                Filter aktif: "{search.trim()}"
+              </span>
+            ) : (
+              <span className="rounded-full bg-slate-100 px-3 py-1 font-semibold text-slate-600">
+                Semua alat ditampilkan
+              </span>
+            )}
+          </div>
 
           <div className="mx-auto mt-8 max-w-3xl text-left">
             <label
@@ -118,7 +133,7 @@ function PeminjamanAlat() {
 
                     <div className="mt-4 flex items-center justify-between gap-3">
                       <span
-                        className={`text-sm font-semibold ${getStatusTextClass(
+                        className={`inline-flex rounded-full px-3 py-1 text-xs font-bold ${getStatusBadgeClass(
                           status
                         )}`}
                       >

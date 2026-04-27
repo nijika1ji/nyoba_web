@@ -3,8 +3,8 @@ import { Link, useParams } from 'react-router-dom'
 import alatLab from '../data/alatLab'
 import {
   findAlatBySlug,
+  getStatusBadgeClass,
   getStatusLabel,
-  getStatusTextClass,
   slugify,
 } from '../utils/alatHelpers'
 
@@ -78,7 +78,7 @@ function DetailPeminjamanAlat() {
                   Status:
                 </span>
                 <span
-                  className={`text-sm font-bold ${getStatusTextClass(status)}`}
+                  className={`inline-flex rounded-full px-3 py-1 text-xs font-bold ${getStatusBadgeClass(status)}`}
                 >
                   {status}
                 </span>
