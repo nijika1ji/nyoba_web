@@ -71,7 +71,9 @@ function Navbar() {
                 <button
                   className={`${menuBase} ${menuEffect} ${
                     isProjectActive ? activeStyle : ''
-                  }`}
+                  } focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50`}
+                  aria-haspopup="true"
+                  aria-expanded="false"
                 >
                   <span className="relative z-10 flex items-center gap-2">
                     Project
@@ -79,17 +81,17 @@ function Navbar() {
                   </span>
                 </button>
 
-                <div className="absolute left-0 top-full pt-3 hidden group-hover:block">
+                <div className="absolute left-0 top-full pt-3 hidden group-hover:block group-focus-within:block">
                   <div className="w-64 rounded-2xl bg-zinc-900/95 shadow-2xl border border-white/10 overflow-hidden">
                     <Link
                       to="/project/penelitian"
-                      className="block px-6 py-4 text-white text-base font-semibold hover:bg-white/10 transition"
+                      className="block px-6 py-4 text-white text-base font-semibold hover:bg-white/10 transition focus-visible:outline-none focus-visible:bg-white/10"
                     >
                       Penelitian
                     </Link>
                     <Link
                       to="/project/pengabdian"
-                      className="block px-6 py-4 text-white text-base font-semibold hover:bg-white/10 transition"
+                      className="block px-6 py-4 text-white text-base font-semibold hover:bg-white/10 transition focus-visible:outline-none focus-visible:bg-white/10"
                     >
                       Pengabdian
                     </Link>
@@ -101,7 +103,9 @@ function Navbar() {
                 <button
                   className={`${menuBase} ${menuEffect} ${
                     isProfilActive ? activeStyle : ''
-                  }`}
+                  } focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50`}
+                  aria-haspopup="true"
+                  aria-expanded="false"
                 >
                   <span className="relative z-10 flex items-center gap-2">
                     Profil
@@ -109,17 +113,17 @@ function Navbar() {
                   </span>
                 </button>
 
-                <div className="absolute left-0 top-full pt-3 hidden group-hover:block">
+                <div className="absolute left-0 top-full pt-3 hidden group-hover:block group-focus-within:block">
                   <div className="w-72 rounded-2xl bg-zinc-900/95 shadow-2xl border border-white/10 overflow-hidden">
                     <Link
                       to="/profil"
-                      className="block px-6 py-4 text-white text-base font-semibold hover:bg-white/10 transition"
+                      className="block px-6 py-4 text-white text-base font-semibold hover:bg-white/10 transition focus-visible:outline-none focus-visible:bg-white/10"
                     >
                       Tentang Laboratorium
                     </Link>
                     <Link
                       to="/profil/dosen"
-                      className="block px-6 py-4 text-white text-base font-semibold hover:bg-white/10 transition"
+                      className="block px-6 py-4 text-white text-base font-semibold hover:bg-white/10 transition focus-visible:outline-none focus-visible:bg-white/10"
                     >
                       Profil Dosen
                     </Link>
@@ -131,31 +135,33 @@ function Navbar() {
                 <button
                   className={`${menuBase} ${menuEffect} ${
                     isLayananActive ? activeStyle : ''
-                  }`}
+                  } focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50`}
+                  aria-haspopup="true"
+                  aria-expanded="false"
                 >
                   <span className="relative z-10 flex items-center gap-2">
                     Layanan
                     <span className="text-xs">▼</span>
                   </span>
                 </button>
-                  <div className="absolute left-0 top-full pt-3 hidden group-hover:block">
+                  <div className="absolute left-0 top-full pt-3 hidden group-hover:block group-focus-within:block">
                   <div className="w-72 rounded-2xl bg-zinc-900/95 shadow-2xl border border-white/10 overflow-hidden">
                     <Link
                       to="/layanan"
-                      className="block px-6 py-4 text-white text-base font-semibold hover:bg-white/10 transition"
+                      className="block px-6 py-4 text-white text-base font-semibold hover:bg-white/10 transition focus-visible:outline-none focus-visible:bg-white/10"
                     >
                       Informasi Layanan
                     </Link>
-                    
+
                     <Link
                       to="/layanan/peminjaman-alat"
-                      className="block px-6 py-4 text-white text-base font-semibold hover:bg-white/10 transition"
+                      className="block px-6 py-4 text-white text-base font-semibold hover:bg-white/10 transition focus-visible:outline-none focus-visible:bg-white/10"
                     >
                       Peminjaman Alat
                     </Link>
                     <Link
                       to="/layanan/peminjaman-ruangan"
-                      className="block px-6 py-4 text-white text-base font-semibold hover:bg-white/10 transition"
+                      className="block px-6 py-4 text-white text-base font-semibold hover:bg-white/10 transition focus-visible:outline-none focus-visible:bg-white/10"
                     >
                       Peminjaman Ruangan
                     </Link>
@@ -176,8 +182,9 @@ function Navbar() {
             {/* Mobile hamburger */}
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="md:hidden inline-flex items-center justify-center w-11 h-11 rounded-xl bg-white/10 text-white border border-white/10"
+              className="md:hidden inline-flex items-center justify-center w-11 h-11 rounded-xl bg-white/10 text-white border border-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50"
               aria-label="Toggle menu"
+              aria-expanded={isOpen}
             >
               {isOpen ? '✕' : '☰'}
             </button>
@@ -203,9 +210,10 @@ function Navbar() {
               <div className="rounded-xl overflow-hidden border border-white/10">
                 <button
                   onClick={() => setOpenProject(!openProject)}
-                  className={`w-full px-4 py-3 text-left text-white font-semibold flex items-center justify-between ${
+                  className={`w-full px-4 py-3 text-left text-white font-semibold flex items-center justify-between focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50 ${
                     isProjectActive ? 'bg-white/10' : 'hover:bg-white/5'
                   }`}
+                  aria-expanded={openProject}
                 >
                   <span>Project</span>
                   <span>{openProject ? '▲' : '▼'}</span>
@@ -234,9 +242,10 @@ function Navbar() {
               <div className="rounded-xl overflow-hidden border border-white/10">
                 <button
                   onClick={() => setOpenProfil(!openProfil)}
-                  className={`w-full px-4 py-3 text-left text-white font-semibold flex items-center justify-between ${
+                  className={`w-full px-4 py-3 text-left text-white font-semibold flex items-center justify-between focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50 ${
                     isProfilActive ? 'bg-white/10' : 'hover:bg-white/5'
                   }`}
+                  aria-expanded={openProfil}
                 >
                   <span>Profil</span>
                   <span>{openProfil ? '▲' : '▼'}</span>
@@ -265,9 +274,10 @@ function Navbar() {
               <div className="rounded-xl overflow-hidden border border-white/10">
                 <button
                   onClick={() => setOpenLayanan(!openLayanan)}
-                  className={`w-full px-4 py-3 text-left text-white font-semibold flex items-center justify-between ${
+                  className={`w-full px-4 py-3 text-left text-white font-semibold flex items-center justify-between focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50 ${
                     isLayananActive ? 'bg-white/10' : 'hover:bg-white/5'
                   }`}
+                  aria-expanded={openLayanan}
                 >
                   <span>Layanan</span>
                   <span>{openLayanan ? '▲' : '▼'}</span>

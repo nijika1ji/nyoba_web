@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 
 function PeminjamanRuangan() {
@@ -39,14 +39,39 @@ function PeminjamanRuangan() {
     ],
   }
 
-  const [form, setForm] = useState({
-    nama: '',
-    identitas: '',
-    tanggal: todayStr,
-    jamMulai: '',
-    jamSelesai: '',
-    keperluan: '',
+  const storageKey = 'form-peminjaman-ruangan'
+
+  const [form, setForm] = useState(() => {
+    const saved = localStorage.getItem(storageKey)
+    if (saved) {
+      try {
+        return JSON.parse(saved)
+      } catch {
+        return {
+          nama: '',
+          identitas: '',
+          tanggal: todayStr,
+          jamMulai: '',
+          jamSelesai: '',
+          keperluan: '',
+        }
+      }
+    }
+    return {
+      nama: '',
+      identitas: '',
+      tanggal: todayStr,
+      jamMulai: '',
+      jamSelesai: '',
+      keperluan: '',
+    }
   })
+
+  const [submitted, setSubmitted] = useState(false)
+
+  useEffect(() => {
+    localStorage.setItem(storageKey, JSON.stringify(form))
+  }, [form])
 
   const timeToMinutes = (time) => {
     const [hour, minute] = time.split(':').map(Number)
@@ -76,10 +101,10 @@ function PeminjamanRuangan() {
 
   const occupiedSlots = bookedSchedules[form.tanggal] || []
 
-  const availableRanges = useMemo(() => {
-    const openStart = timeToMinutes('08:00')
-    const openEnd = timeToMinutes('16:00')
+  const openStart = timeToMinutes('08:00')
+  const openEnd = timeToMinutes('16:00')
 
+  const availableRanges = (() => {
     if (occupiedSlots.length === 0) {
       return [{ start: '08:00', end: '16:00' }]
     }
@@ -115,9 +140,9 @@ function PeminjamanRuangan() {
     }
 
     return ranges
-  }, [occupiedSlots])
+  })()
 
-  const bentrok = useMemo(() => {
+  const bentrok = (() => {
     if (!form.jamMulai || !form.jamSelesai) return false
 
     const mulai = timeToMinutes(form.jamMulai)
@@ -131,12 +156,12 @@ function PeminjamanRuangan() {
 
       return mulai < slotSelesai && selesai > slotMulai
     })
-  }, [form.jamMulai, form.jamSelesai, occupiedSlots])
+  })()
 
-  const durasiMenit = useMemo(() => {
+  const durasiMenit = (() => {
     if (!form.jamMulai || !form.jamSelesai) return 0
     return timeToMinutes(form.jamSelesai) - timeToMinutes(form.jamMulai)
-  }, [form.jamMulai, form.jamSelesai])
+  })()
 
   const melebihiBatas = durasiMenit > 180
   const waktuTidakValid = form.jamMulai && form.jamSelesai && durasiMenit <= 0
@@ -162,37 +187,26 @@ function PeminjamanRuangan() {
     e.preventDefault()
 
     if (!form.nama || !form.identitas || !form.tanggal || !form.jamMulai || !form.jamSelesai || !form.keperluan) {
-      alert('Mohon lengkapi semua data terlebih dahulu.')
       return
     }
 
-    if (waktuTidakValid) {
-      alert('Jam selesai harus lebih besar dari jam mulai.')
+    if (waktuTidakValid || melebihiBatas || bentrok) {
       return
     }
 
-    if (melebihiBatas) {
-      alert('Durasi peminjaman maksimal 3 jam.')
-      return
-    }
-
-    if (bentrok) {
-      alert('Jam yang dipilih bentrok dengan jadwal yang sudah ada.')
-      return
-    }
-
-    alert(
-      'Pengajuan peminjaman berhasil dikirim (frontend dummy). Nanti saat backend dibuat, data akan disimpan ke database.'
-    )
-
-    setForm({
-      nama: '',
-      identitas: '',
-      tanggal: todayStr,
-      jamMulai: '',
-      jamSelesai: '',
-      keperluan: '',
-    })
+    setSubmitted(true)
+    localStorage.removeItem(storageKey)
+    setTimeout(() => {
+      setForm({
+        nama: '',
+        identitas: '',
+        tanggal: todayStr,
+        jamMulai: '',
+        jamSelesai: '',
+        keperluan: '',
+      })
+      setSubmitted(false)
+    }, 4000)
   }
 
   return (
@@ -247,40 +261,51 @@ function PeminjamanRuangan() {
           <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
             <h2 className="text-2xl font-bold mb-6">Form Reservasi Ruangan</h2>
 
+            {submitted && (
+              <div className="mb-6 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
+                <strong>Pengajuan berhasil dikirim!</strong> Form akan direset otomatis. (Backend belum dihubungkan, ini hanya demo frontend.)
+              </div>
+            )}
+
             <form onSubmit={handleSubmit} className="space-y-5">
               <div className="grid gap-5 md:grid-cols-2">
                 <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-2">
+                  <label htmlFor="field-nama" className="block text-sm font-semibold text-slate-700 mb-2">
                     Nama
                   </label>
                   <input
+                    id="field-nama"
                     type="text"
                     value={form.nama}
                     onChange={(e) => handleChange('nama', e.target.value)}
                     placeholder="Masukkan nama"
                     className="w-full rounded-xl border border-slate-300 px-4 py-3 outline-none focus:ring-2 focus:ring-blue-200"
+                    aria-required="true"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-2">
+                  <label htmlFor="field-identitas" className="block text-sm font-semibold text-slate-700 mb-2">
                     NIM / Identitas
                   </label>
                   <input
+                    id="field-identitas"
                     type="text"
                     value={form.identitas}
                     onChange={(e) => handleChange('identitas', e.target.value)}
                     placeholder="Masukkan NIM atau identitas"
                     className="w-full rounded-xl border border-slate-300 px-4 py-3 outline-none focus:ring-2 focus:ring-blue-200"
+                    aria-required="true"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-2">
+                <label htmlFor="field-ruangan" className="block text-sm font-semibold text-slate-700 mb-2">
                   Ruangan
                 </label>
                 <input
+                  id="field-ruangan"
                   type="text"
                   value={ruangan.nama}
                   disabled
@@ -290,23 +315,25 @@ function PeminjamanRuangan() {
 
               <div className="grid gap-5 md:grid-cols-2">
                 <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-2">
+                  <label htmlFor="field-tanggal" className="block text-sm font-semibold text-slate-700 mb-2">
                     Tanggal
                   </label>
                   <input
+                    id="field-tanggal"
                     type="date"
                     value={form.tanggal}
                     min={todayStr}
                     onChange={(e) => handleChange('tanggal', e.target.value)}
                     className="w-full rounded-xl border border-slate-300 px-4 py-3 outline-none focus:ring-2 focus:ring-blue-200"
+                    aria-required="true"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-2">
+                  <label htmlFor="field-jam-kosong" className="block text-sm font-semibold text-slate-700 mb-2">
                     Jam Kosong Tersedia
                   </label>
-                  <div className="rounded-xl border border-slate-300 bg-slate-50 px-4 py-3 text-slate-700 min-h-[52px]">
+                  <div id="field-jam-kosong" className="rounded-xl border border-slate-300 bg-slate-50 px-4 py-3 text-slate-700 min-h-[52px]">
                     {availableRanges.length > 0 ? (
                       <div className="flex flex-wrap gap-2">
                         {availableRanges.map((slot, index) => (
@@ -329,13 +356,16 @@ function PeminjamanRuangan() {
 
               <div className="grid gap-5 md:grid-cols-2">
                 <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-2">
+                  <label htmlFor="field-jam-mulai" className="block text-sm font-semibold text-slate-700 mb-2">
                     Jam Mulai
                   </label>
                   <select
+                    id="field-jam-mulai"
                     value={form.jamMulai}
                     onChange={(e) => handleChange('jamMulai', e.target.value)}
                     className="w-full rounded-xl border border-slate-300 px-4 py-3 outline-none focus:ring-2 focus:ring-blue-200"
+                    aria-required="true"
+                    aria-invalid={waktuTidakValid || bentrok}
                   >
                     <option value="">Pilih jam mulai</option>
                     {allTimeOptions.map((time) => (
@@ -347,13 +377,16 @@ function PeminjamanRuangan() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-2">
+                  <label htmlFor="field-jam-selesai" className="block text-sm font-semibold text-slate-700 mb-2">
                     Jam Selesai <span className="text-slate-400">(Maks. 3 jam)</span>
                   </label>
                   <select
+                    id="field-jam-selesai"
                     value={form.jamSelesai}
                     onChange={(e) => handleChange('jamSelesai', e.target.value)}
                     className="w-full rounded-xl border border-slate-300 px-4 py-3 outline-none focus:ring-2 focus:ring-blue-200"
+                    aria-required="true"
+                    aria-invalid={waktuTidakValid || bentrok || melebihiBatas}
                   >
                     <option value="">Pilih jam selesai</option>
                     {endOptions.map((time) => (
@@ -366,7 +399,7 @@ function PeminjamanRuangan() {
               </div>
 
               {(bentrok || melebihiBatas || waktuTidakValid) && (
-                <div className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-rose-700 font-medium">
+                <div className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-rose-700 font-medium" role="alert" aria-live="polite">
                   {waktuTidakValid && 'Jam selesai harus lebih besar dari jam mulai.'}
                   {!waktuTidakValid && melebihiBatas && 'Durasi peminjaman maksimal 3 jam.'}
                   {!waktuTidakValid && !melebihiBatas && bentrok && 'Jam yang kamu pilih bentrok dengan jadwal yang sudah ada.'}
@@ -374,21 +407,23 @@ function PeminjamanRuangan() {
               )}
 
               {!bentrok && !melebihiBatas && !waktuTidakValid && form.jamMulai && form.jamSelesai && (
-                <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-emerald-700 font-medium">
+                <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-emerald-700 font-medium" role="status" aria-live="polite">
                   Slot waktu yang kamu pilih tersedia.
                 </div>
               )}
 
               <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-2">
+                <label htmlFor="field-keperluan" className="block text-sm font-semibold text-slate-700 mb-2">
                   Keperluan
                 </label>
                 <textarea
+                  id="field-keperluan"
                   rows="4"
                   value={form.keperluan}
                   onChange={(e) => handleChange('keperluan', e.target.value)}
                   placeholder="Tuliskan keperluan penggunaan ruangan..."
                   className="w-full rounded-xl border border-slate-300 px-4 py-3 outline-none focus:ring-2 focus:ring-blue-200"
+                  aria-required="true"
                 />
               </div>
 

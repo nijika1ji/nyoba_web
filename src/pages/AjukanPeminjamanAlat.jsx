@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import alatLab from '../data/alatLab'
 import { findAlatBySlug, slugify } from '../utils/alatHelpers'
@@ -7,18 +7,43 @@ function AjukanPeminjamanAlat() {
   const { slug } = useParams()
   const alat = findAlatBySlug(slug, alatLab)
 
-  const [form, setForm] = useState({
-    nama: '',
-    identitas: '',
-    kontak: '',
-    keperluan: '',
-    jumlah: 1,
-    tanggalPinjam: '',
-    tanggalKembali: '',
-    catatan: '',
+  const storageKey = `form-peminjaman-alat-${slug}`
+
+  const [form, setForm] = useState(() => {
+    const saved = localStorage.getItem(storageKey)
+    if (saved) {
+      try {
+        return JSON.parse(saved)
+      } catch {
+        return {
+          nama: '',
+          identitas: '',
+          kontak: '',
+          keperluan: '',
+          jumlah: 1,
+          tanggalPinjam: '',
+          tanggalKembali: '',
+          catatan: '',
+        }
+      }
+    }
+    return {
+      nama: '',
+      identitas: '',
+      kontak: '',
+      keperluan: '',
+      jumlah: 1,
+      tanggalPinjam: '',
+      tanggalKembali: '',
+      catatan: '',
+    }
   })
 
   const [submitted, setSubmitted] = useState(false)
+
+  useEffect(() => {
+    localStorage.setItem(storageKey, JSON.stringify(form))
+  }, [form, storageKey])
 
   const today = new Date().toISOString().split('T')[0]
 
@@ -69,6 +94,7 @@ function AjukanPeminjamanAlat() {
     if (isInvalid) return
 
     setSubmitted(true)
+    localStorage.removeItem(storageKey)
     setTimeout(() => {
       setForm({
         nama: '',
