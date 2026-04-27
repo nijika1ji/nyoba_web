@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import Button from '../components/ui/Button'
 
 function Layanan() {
   const layananList = [
@@ -66,24 +67,29 @@ function Layanan() {
         </div>
 
         <div className="mt-12 grid gap-6 lg:grid-cols-[1.3fr_1fr]">
-          <div className="rounded-3xl border border-slate-200 bg-white p-8 md:p-10 shadow-sm">
-            <h2 className="text-2xl md:text-3xl font-bold mb-4">
+          <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm md:p-10">
+            <h2 className="mb-4 text-2xl font-bold md:text-3xl">
               Butuh informasi lebih lanjut?
             </h2>
 
-            <p className="text-gray-700 leading-8 mb-6">
+            <p className="mb-6 leading-8 text-gray-700">
               Untuk informasi lebih lanjut terkait layanan, penggunaan fasilitas,
               maupun konsultasi kegiatan akademik dan riset, silakan menghubungi
               Laboratorium Riset Elektronika dan Instrumentasi melalui halaman
               kontak.
             </p>
 
-            <Link
-              to="/kontak"
-              className="inline-block bg-blue-600 hover:bg-blue-700 transition text-white px-6 py-3 rounded-xl font-semibold shadow-sm"
-            >
-              Hubungi Kami
-            </Link>
+            <div className="flex flex-wrap gap-3">
+              <Button to="/kontak" variant="primary">
+                Hubungi Kami
+              </Button>
+              <Button to="/layanan/peminjaman-alat" variant="outline">
+                Peminjaman Alat
+              </Button>
+              <Button to="/layanan/peminjaman-ruangan" variant="outline">
+                Peminjaman Ruangan
+              </Button>
+            </div>
           </div>
 
           <div className="rounded-3xl border border-slate-200 bg-slate-950 p-8 text-white shadow-sm">

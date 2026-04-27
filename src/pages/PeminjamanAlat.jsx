@@ -6,6 +6,8 @@ import {
   getStatusLabel,
   slugify,
 } from '../utils/alatHelpers'
+import Button from '../components/ui/Button'
+import StateCard from '../components/ui/StateCard'
 
 function PeminjamanAlat() {
   const [search, setSearch] = useState('')
@@ -70,52 +72,50 @@ function PeminjamanAlat() {
         </div>
 
         {filteredAlat.length === 0 ? (
-          <div className="rounded-3xl border border-dashed border-slate-300 bg-white p-10 text-center text-slate-500 shadow-sm" role="status" aria-live="polite">
-            <p className="text-base font-semibold text-slate-700">Alat tidak ditemukan.</p>
-            {normalizedSearch ? (
-              <div className="mt-3 space-y-3">
-                <p>
-                  Tidak ada hasil untuk kata kunci <span className="font-semibold">"{search.trim()}"</span>.
-                </p>
-                <div className="flex items-center justify-center gap-3">
-                  <button
-                    type="button"
-                    onClick={() => setSearch('')}
-                    className="inline-flex rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-100"
-                  >
-                    Hapus pencarian
-                  </button>
-                  <Link
-                    to="/layanan"
-                    className="inline-flex rounded-lg border border-blue-200 px-4 py-2 text-sm font-semibold text-blue-700 transition hover:bg-blue-50"
-                  >
-                    Kembali ke layanan
-                  </Link>
-                </div>
-              </div>
-            ) : (
-              <div className="mt-4">
-                <Link
-                  to="/layanan"
-                  className="inline-flex rounded-lg border border-blue-200 px-4 py-2 text-sm font-semibold text-blue-700 transition hover:bg-blue-50"
-                >
-                  Lihat layanan lain
-                </Link>
+          <div role="status" aria-live="polite">
+            <StateCard
+              title="Alat tidak ditemukan"
+              message={
+                normalizedSearch
+                  ? `Tidak ada hasil untuk kata kunci "${search.trim()}". Coba kata kunci lain atau hapus pencarian untuk melihat semua alat.`
+                  : 'Belum ada alat yang tersedia saat ini. Silakan cek kembali nanti atau hubungi admin laboratorium.'
+              }
+              variant="empty"
+              action={
+                normalizedSearch
+                  ? {
+                      onClick: () => setSearch(''),
+                      label: 'Hapus pencarian',
+                      variant: 'secondary',
+                    }
+                  : {
+                      to: '/layanan',
+                      label: 'Kembali ke layanan',
+                      variant: 'secondary',
+                    }
+              }
+            />
+            {normalizedSearch && (
+              <div className="mt-4 text-center">
+                <Button to="/layanan" variant="outline" size="sm">
+                  Kembali ke layanan
+                </Button>
               </div>
             )}
           </div>
         ) : (
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-5">
-            {filteredAlat.map((item) => {
-              const status = getStatusLabel(item)
-              const slug = slugify(item.nama)
+          <>
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-5">
+              {filteredAlat.map((item) => {
+                const status = getStatusLabel(item)
+                const slug = slugify(item.nama)
 
-              return (
-                <Link
-                  key={item.id}
-                  to={`/layanan/peminjaman-alat/${slug}`}
-                  className="group overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-xl"
-                >
+                return (
+                  <Link
+                    key={item.id}
+                    to={`/layanan/peminjaman-alat/${slug}`}
+                    className="group overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-xl"
+                  >
                   <div className="relative flex aspect-[4/3] items-center justify-center bg-slate-50 p-5">
                     <img
                       src={item.gambar}
@@ -152,6 +152,22 @@ function PeminjamanAlat() {
               )
             })}
           </div>
+
+          <div className="mt-12 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm md:p-8">
+            <h2 className="text-xl font-bold text-slate-900">Tidak menemukan alat yang kamu cari?</h2>
+            <p className="mt-3 text-sm leading-7 text-slate-600">
+              Jika alat yang kamu butuhkan tidak ada di katalog, hubungi admin laboratorium untuk informasi lebih lanjut atau konsultasi kebutuhan alatmu.
+            </p>
+            <div className="mt-5 flex flex-wrap gap-3">
+              <Button to="/kontak" variant="primary">
+                Hubungi Admin
+              </Button>
+              <Button to="/layanan" variant="outline">
+                Lihat layanan lain
+              </Button>
+            </div>
+          </div>
+        </>
         )}
       </div>
     </div>

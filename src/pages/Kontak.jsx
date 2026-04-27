@@ -1,3 +1,5 @@
+import Button from '../components/ui/Button'
+
 const WHATSAPP_NUMBER = '6289668597807'
 const EMAIL_ADDRESS = 'bagussatria79@gmail.com'
 const MAPS_QUERY = 'Electronics and Instrumentation Research Laboratory, Yogyakarta'
@@ -118,7 +120,7 @@ function Kontak() {
                   href={mapsOpenUrl}
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-block rounded-xl bg-slate-950 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
+                  className="inline-flex items-center justify-center rounded-xl bg-slate-950 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-500 focus-visible:ring-offset-2"
                 >
                   Buka Google Maps
                 </a>
@@ -127,7 +129,7 @@ function Kontak() {
                   href={whatsappUrl}
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-block rounded-xl border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-800 transition hover:bg-slate-50"
+                  className="inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-800 transition hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-500 focus-visible:ring-offset-2"
                 >
                   Hubungi Admin
                 </a>
@@ -143,6 +145,24 @@ function Kontak() {
               loading="lazy"
               allowFullScreen
             />
+          </div>
+        </div>
+
+        <div className="mt-10 rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
+          <h2 className="text-2xl font-bold text-slate-950">Akses cepat layanan</h2>
+          <p className="mt-3 max-w-3xl text-sm leading-7 text-slate-600">
+            Kalau kamu sudah tahu kebutuhanmu, langsung lanjut ke halaman layanan yang paling sesuai tanpa harus kembali ke menu utama.
+          </p>
+          <div className="mt-5 flex flex-wrap gap-3">
+            <Button to="/layanan" variant="secondary">
+              Info Layanan
+            </Button>
+            <Button to="/layanan/peminjaman-alat" variant="outline">
+              Peminjaman Alat
+            </Button>
+            <Button to="/layanan/peminjaman-ruangan" variant="outline">
+              Peminjaman Ruangan
+            </Button>
           </div>
         </div>
       </div>

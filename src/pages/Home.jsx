@@ -1,6 +1,7 @@
 import { motion as Motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import projects from '../data/projects'
+import Button from '../components/ui/Button'
 
 function Home() {
   const previewProjects = projects.slice(0, 4)
@@ -220,6 +221,23 @@ function Home() {
                 </Motion.div>
               )
             })}
+          </Motion.div>
+
+          <Motion.div
+            className="mt-12 text-center"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, ease: 'easeOut' }}
+          >
+            <div className="flex flex-wrap items-center justify-center gap-4">
+              <Button to="/project/penelitian" variant="primary" size="lg">
+                Lihat Semua Project
+              </Button>
+              <Button to="/layanan" variant="outline" size="lg">
+                Jelajahi Layanan
+              </Button>
+            </div>
           </Motion.div>
         </div>
       </section>

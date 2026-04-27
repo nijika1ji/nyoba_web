@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import alatLab from '../data/alatLab'
 import {
   findAlatBySlug,
@@ -7,6 +7,8 @@ import {
   getStatusLabel,
   slugify,
 } from '../utils/alatHelpers'
+import Button from '../components/ui/Button'
+import StateCard from '../components/ui/StateCard'
 
 function DetailPeminjamanAlat() {
   const { slug } = useParams()
@@ -16,20 +18,18 @@ function DetailPeminjamanAlat() {
 
   if (!alat) {
     return (
-      <div className="min-h-screen bg-[linear-gradient(180deg,#f8fafc_0%,#eef5ff_45%,#ffffff_100%)]">
-        <div className="mx-auto max-w-5xl px-6 py-14">
-          <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
-            <h1 className="mb-4 text-3xl font-bold text-slate-900">
-              Alat tidak ditemukan
-            </h1>
-
-            <Link
-              to="/layanan/peminjaman-alat"
-              className="inline-block rounded-xl bg-gray-100 px-5 py-3 font-medium text-gray-800 transition hover:bg-gray-200"
-            >
-              Kembali
-            </Link>
-          </div>
+      <div className="min-h-screen bg-[linear-gradient(180deg,#f8fafc_0%,#eef5ff_45%,#ffffff_100%)] px-6 py-14">
+        <div className="mx-auto max-w-5xl">
+          <StateCard
+            title="Alat tidak ditemukan"
+            message="Data alat yang kamu cari tidak tersedia lagi. Kembali ke katalog untuk melihat alat lain yang bisa dipinjam."
+            variant="empty"
+            action={{
+              to: '/layanan/peminjaman-alat',
+              label: 'Kembali ke katalog',
+              variant: 'secondary',
+            }}
+          />
         </div>
       </div>
     )
@@ -40,12 +40,9 @@ function DetailPeminjamanAlat() {
   return (
     <div className="min-h-screen bg-[linear-gradient(180deg,#f8fafc_0%,#eef5ff_45%,#ffffff_100%)]">
       <div className="mx-auto max-w-5xl px-6 py-14">
-        <Link
-          to="/layanan/peminjaman-alat"
-          className="mb-8 inline-block rounded-xl bg-white px-5 py-3 font-medium text-gray-800 shadow-sm transition hover:bg-gray-100"
-        >
+        <Button to="/layanan/peminjaman-alat" variant="secondary" className="mb-8">
           Kembali
-        </Link>
+        </Button>
 
         <div className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
           <div className="grid gap-0 lg:grid-cols-[1fr_1.05fr]">
@@ -74,9 +71,7 @@ function DetailPeminjamanAlat() {
               </h1>
 
               <div className="mt-5 flex items-center gap-2">
-                <span className="text-sm font-semibold text-slate-500">
-                  Status:
-                </span>
+                <span className="text-sm font-semibold text-slate-500">Status:</span>
                 <span
                   className={`inline-flex rounded-full px-3 py-1 text-xs font-bold ${getStatusBadgeClass(status)}`}
                 >
@@ -86,24 +81,18 @@ function DetailPeminjamanAlat() {
 
               <div className="mt-6 overflow-hidden rounded-2xl border border-slate-200 bg-slate-50">
                 <InfoRow label="Tersedia" value={`${alat.tersedia} unit`} />
-                <InfoRow
-                  label="Sedang dipinjam"
-                  value={`${alat.dipinjam} unit`}
-                />
-                <InfoRow
-                  label="Maintenance"
-                  value={`${alat.maintenance} unit`}
-                />
+                <InfoRow label="Sedang dipinjam" value={`${alat.dipinjam} unit`} />
+                <InfoRow label="Maintenance" value={`${alat.maintenance} unit`} />
                 <InfoRow label="Total unit" value={`${alat.totalUnit} unit`} />
               </div>
 
-              <div className="mt-7">
-                <Link
-                  to={`/layanan/peminjaman-alat/${slugify(alat.nama)}/ajukan`}
-                  className="inline-flex items-center justify-center rounded-xl bg-amber-400 px-6 py-3 text-sm font-black uppercase text-black shadow-[0_4px_0_0_#92400e] transition hover:translate-y-[1px] hover:shadow-[0_3px_0_0_#92400e]"
-                >
+              <div className="mt-7 flex flex-wrap gap-3">
+                <Button to={`/layanan/peminjaman-alat/${slugify(alat.nama)}/ajukan`} variant="action">
                   Ajukan Peminjaman
-                </Link>
+                </Button>
+                <Button to="/kontak" variant="outline">
+                  Hubungi Admin
+                </Button>
               </div>
 
               <div className="mt-8">
@@ -136,17 +125,28 @@ function DetailPeminjamanAlat() {
                 </h2>
 
                 <div className="space-y-2 text-sm leading-6 text-slate-600">
+                  <p>Pengajuan peminjaman dilakukan melalui form khusus setelah memilih alat ini.</p>
                   <p>
-                    Pengajuan peminjaman dilakukan melalui form khusus setelah
-                    memilih alat ini.
-                  </p>
-                  <p>
-                    Data stok mengikuti jumlah unit tersedia, unit yang sedang
-                    dipinjam, dan unit yang sedang maintenance.
+                    Data stok mengikuti jumlah unit tersedia, unit yang sedang dipinjam, dan unit yang sedang maintenance.
                   </p>
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+
+        <div className="mt-8 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+          <h2 className="text-xl font-bold text-slate-900">Perlu bantuan memilih alat?</h2>
+          <p className="mt-3 text-sm leading-7 text-slate-600">
+            Jika kamu masih ragu memilih alat yang sesuai, cek kembali katalog alat atau konsultasikan kebutuhanmu melalui halaman kontak.
+          </p>
+          <div className="mt-5 flex flex-wrap gap-3">
+            <Button to="/layanan/peminjaman-alat" variant="secondary">
+              Lihat alat lain
+            </Button>
+            <Button to="/kontak" variant="outline">
+              Buka kontak
+            </Button>
           </div>
         </div>
 

@@ -1,6 +1,8 @@
-import { Link, useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import { useState } from 'react'
 import projects from '../data/projects'
+import Button from '../components/ui/Button'
+import StateCard from '../components/ui/StateCard'
 
 function ProjectDetail() {
   const { jenis, id } = useParams()
@@ -12,14 +14,19 @@ function ProjectDetail() {
 
   if (!project) {
     return (
-      <div className="max-w-4xl mx-auto px-6 py-12">
-        <h1 className="text-3xl font-bold mb-4">Project tidak ditemukan</h1>
-        <Link
-          to="/"
-          className="inline-block px-5 py-3 rounded-xl bg-gray-100 text-gray-800 font-medium hover:bg-gray-200 transition"
-        >
-          Kembali
-        </Link>
+      <div className="min-h-screen bg-[linear-gradient(180deg,#f8fafc_0%,#eef5ff_45%,#ffffff_100%)] px-6 py-14">
+        <div className="mx-auto max-w-4xl">
+          <StateCard
+            title="Project tidak ditemukan"
+            message="Project yang kamu cari tidak tersedia. Kembali ke halaman project untuk melihat daftar kegiatan lainnya."
+            variant="empty"
+            action={{
+              to: '/project/penelitian',
+              label: 'Lihat daftar project',
+              variant: 'secondary',
+            }}
+          />
+        </div>
       </div>
     )
   }
@@ -30,41 +37,51 @@ function ProjectDetail() {
       : 'bg-emerald-100 text-emerald-700'
 
   return (
-    <div className="bg-white min-h-screen">
-      <div className="max-w-5xl mx-auto px-6 py-14">
-        <Link
-          to={`/project/${project.jenis}`}
-          className="inline-block mb-8 px-5 py-3 rounded-xl bg-gray-100 text-gray-800 font-medium hover:bg-gray-200 transition"
-        >
+    <div className="min-h-screen bg-[linear-gradient(180deg,#f8fafc_0%,#eef5ff_45%,#ffffff_100%)]">
+      <div className="mx-auto max-w-5xl px-6 py-14">
+        <Button to={`/project/${project.jenis}`} variant="secondary" className="mb-8">
           Kembali
-        </Link>
+        </Button>
 
         {!imgError && project.gambar ? (
           <img
             src={project.gambar}
             alt={project.judul}
-            className="w-full h-96 object-cover rounded-3xl mb-8"
+            className="mb-8 h-96 w-full rounded-3xl object-cover"
             onError={() => setImgError(true)}
           />
         ) : (
-          <div className="w-full h-96 rounded-3xl mb-8 bg-slate-200 flex items-center justify-center">
-            <p className="text-slate-500 font-semibold">Preview Project</p>
+          <div className="mb-8 flex h-96 w-full items-center justify-center rounded-3xl bg-slate-200">
+            <p className="font-semibold text-slate-500">Preview Project</p>
           </div>
         )}
 
         <div className="mb-4">
           <span
-            className={`inline-block px-4 py-2 rounded-full text-sm font-semibold uppercase tracking-wide ${badgeClass}`}
+            className={`inline-block rounded-full px-4 py-2 text-sm font-semibold uppercase tracking-wide ${badgeClass}`}
           >
             {project.jenis}
           </span>
         </div>
 
-        <h1 className="text-4xl md:text-5xl font-bold mb-5">{project.judul}</h1>
+        <h1 className="mb-5 text-4xl font-bold md:text-5xl">{project.judul}</h1>
 
-        <p className="text-gray-700 leading-8 text-lg">
-          {project.deskripsiLengkap}
-        </p>
+        <p className="text-lg leading-8 text-gray-700">{project.deskripsiLengkap}</p>
+
+        <div className="mt-10 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm md:p-8">
+          <h2 className="text-xl font-bold text-slate-900">Langkah berikutnya</h2>
+          <p className="mt-3 text-sm leading-7 text-slate-600">
+            Tertarik mengembangkan project serupa atau butuh pendampingan lab? Lihat project lain atau hubungi tim laboratorium untuk diskusi lebih lanjut.
+          </p>
+          <div className="mt-5 flex flex-wrap gap-3">
+            <Button to={`/project/${project.jenis}`} variant="primary">
+              Lihat project lainnya
+            </Button>
+            <Button to="/kontak" variant="outline">
+              Hubungi Laboratorium
+            </Button>
+          </div>
+        </div>
       </div>
     </div>
   )

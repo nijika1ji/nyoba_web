@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
 import { submitPeminjamanRuangan } from '../utils/submissionService'
+import Button from '../components/ui/Button'
+import FormField from '../components/ui/FormField'
+import StateCard from '../components/ui/StateCard'
 
 function PeminjamanRuangan() {
   const ruangan = {
@@ -25,7 +27,6 @@ function PeminjamanRuangan() {
   const tomorrowStr = formatDate(addDays(today, 1))
   const dayAfterStr = formatDate(addDays(today, 2))
 
-  // Dummy jadwal terisi
   const bookedSchedules = {
     [todayStr]: [
       { start: '08:00', end: '10:00', kegiatan: 'Diskusi Kelompok' },
@@ -48,24 +49,10 @@ function PeminjamanRuangan() {
       try {
         return JSON.parse(saved)
       } catch {
-        return {
-          nama: '',
-          identitas: '',
-          tanggal: todayStr,
-          jamMulai: '',
-          jamSelesai: '',
-          keperluan: '',
-        }
+        return createInitialForm(todayStr)
       }
     }
-    return {
-      nama: '',
-      identitas: '',
-      tanggal: todayStr,
-      jamMulai: '',
-      jamSelesai: '',
-      keperluan: '',
-    }
+    return createInitialForm(todayStr)
   })
 
   const [submitted, setSubmitted] = useState(false)
@@ -80,14 +67,7 @@ function PeminjamanRuangan() {
     if (!submitted) return undefined
 
     const timeoutId = window.setTimeout(() => {
-      setForm({
-        nama: '',
-        identitas: '',
-        tanggal: todayStr,
-        jamMulai: '',
-        jamSelesai: '',
-        keperluan: '',
-      })
+      setForm(createInitialForm(todayStr))
       setSubmitted(false)
     }, 4000)
 
@@ -129,7 +109,6 @@ function PeminjamanRuangan() {
   }
 
   const allTimeOptions = generateTimeOptions()
-
   const occupiedSlots = bookedSchedules[form.tanggal] || []
 
   const openStart = timeToMinutes('08:00')
@@ -184,7 +163,6 @@ function PeminjamanRuangan() {
     return occupiedSlots.some((slot) => {
       const slotMulai = timeToMinutes(slot.start)
       const slotSelesai = timeToMinutes(slot.end)
-
       return mulai < slotSelesai && selesai > slotMulai
     })
   })()
@@ -252,28 +230,24 @@ function PeminjamanRuangan() {
 
   return (
     <div className="min-h-screen bg-[linear-gradient(180deg,#f8fafc_0%,#eef5ff_55%,#ffffff_100%)]">
-      <div className="max-w-6xl mx-auto px-6 py-14">
-        <div className="max-w-4xl mx-auto text-center mb-12">
-          <p className="text-sm uppercase tracking-[0.25em] text-blue-700 font-semibold mb-3">
+      <div className="mx-auto max-w-6xl px-6 py-14">
+        <div className="mx-auto mb-12 max-w-4xl text-center">
+          <p className="mb-3 text-sm font-semibold uppercase tracking-[0.25em] text-blue-700">
             Layanan
           </p>
 
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">
-            Peminjaman Ruangan
-          </h1>
+          <h1 className="mb-4 text-4xl font-bold md:text-5xl">Peminjaman Ruangan</h1>
 
-          <p className="text-gray-700 leading-8">
-            Halaman ini menampilkan informasi ruangan, jadwal penggunaan,
-            ketersediaan waktu, dan form pengajuan peminjaman ruangan laboratorium.
+          <p className="leading-8 text-gray-700">
+            Halaman ini menampilkan informasi ruangan, jadwal penggunaan, ketersediaan waktu, dan form pengajuan peminjaman ruangan laboratorium.
           </p>
         </div>
 
-        {/* Info ruangan */}
-        <div className="grid gap-8 lg:grid-cols-[360px_1fr] mb-12">
+        <div className="mb-12 grid gap-8 lg:grid-cols-[360px_1fr]">
           <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
-            <h2 className="text-2xl font-bold mb-5">Informasi Ruangan</h2>
+            <h2 className="mb-5 text-2xl font-bold">Informasi Ruangan</h2>
 
-            <div className="space-y-5 text-slate-700 leading-8">
+            <div className="space-y-5 leading-8 text-slate-700">
               <div>
                 <p className="font-semibold text-slate-900">Nama Ruangan</p>
                 <p>{ruangan.nama}</p>
@@ -290,7 +264,7 @@ function PeminjamanRuangan() {
               </div>
 
               <div className="rounded-2xl bg-slate-50 p-5">
-                <p className="text-sm text-slate-500 mb-2">Status Saat Ini</p>
+                <p className="mb-2 text-sm text-slate-500">Status Saat Ini</p>
                 <span className="inline-block rounded-full bg-emerald-100 px-4 py-2 text-sm font-semibold text-emerald-700">
                   Tersedia
                 </span>
@@ -298,215 +272,204 @@ function PeminjamanRuangan() {
             </div>
           </div>
 
-          {/* Form reservasi */}
           <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
-            <h2 className="text-2xl font-bold mb-6">Form Reservasi Ruangan</h2>
+            <h2 className="mb-3 text-2xl font-bold">Form Reservasi Ruangan</h2>
+            <p className="mb-6 text-sm leading-7 text-slate-600">
+              Isi form di bawah untuk mengajukan peminjaman ruangan. Pastikan slot waktu yang kamu pilih tidak bentrok dengan jadwal yang sudah ada.
+            </p>
 
             {submitted && (
-              <div className="mb-6 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800" role="status" aria-live="polite">
-                <strong>Pengajuan berhasil dikirim!</strong> Form akan direset otomatis. (Backend belum dihubungkan, ini hanya demo frontend.)
+              <div className="mb-6" role="status" aria-live="polite">
+                <StateCard
+                  title="Pengajuan berhasil dikirim"
+                  message="Form akan direset otomatis. (Backend belum dihubungkan, ini masih demo frontend.)"
+                  variant="success"
+                />
               </div>
             )}
 
             {submitError && (
-              <div className="mb-6 rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800" role="alert" aria-live="polite">
-                {submitError}
+              <div className="mb-6" role="alert" aria-live="polite">
+                <StateCard
+                  title="Pengajuan gagal"
+                  message={submitError}
+                  variant="error"
+                />
               </div>
             )}
 
             <form onSubmit={handleSubmit} className="space-y-5">
               <div className="grid gap-5 md:grid-cols-2">
-                <div>
-                  <label htmlFor="field-nama" className="block text-sm font-semibold text-slate-700 mb-2">
-                    Nama
-                  </label>
-                  <input
-                    id="field-nama"
-                    type="text"
-                    value={form.nama}
-                    onChange={(e) => handleChange('nama', e.target.value)}
-                    placeholder="Masukkan nama"
-                    className="w-full rounded-xl border border-slate-300 px-4 py-3 outline-none focus:ring-2 focus:ring-blue-200"
-                    aria-required="true"
-                  />
-                </div>
+                <FormField
+                  label="Nama"
+                  name="nama"
+                  value={form.nama}
+                  onChange={(e) => handleChange('nama', e.target.value)}
+                  placeholder="Masukkan nama"
+                  required
+                />
 
-                <div>
-                  <label htmlFor="field-identitas" className="block text-sm font-semibold text-slate-700 mb-2">
-                    NIM / Identitas
-                  </label>
-                  <input
-                    id="field-identitas"
-                    type="text"
-                    value={form.identitas}
-                    onChange={(e) => handleChange('identitas', e.target.value)}
-                    placeholder="Masukkan NIM atau identitas"
-                    className="w-full rounded-xl border border-slate-300 px-4 py-3 outline-none focus:ring-2 focus:ring-blue-200"
-                    aria-required="true"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label htmlFor="field-ruangan" className="block text-sm font-semibold text-slate-700 mb-2">
-                  Ruangan
-                </label>
-                <input
-                  id="field-ruangan"
-                  type="text"
-                  value={ruangan.nama}
-                  disabled
-                  className="w-full rounded-xl border border-slate-300 bg-slate-100 px-4 py-3 text-slate-600"
+                <FormField
+                  label="NIM / Identitas"
+                  name="identitas"
+                  value={form.identitas}
+                  onChange={(e) => handleChange('identitas', e.target.value)}
+                  placeholder="Masukkan NIM atau identitas"
+                  required
                 />
               </div>
 
+              <FormField
+                label="Ruangan"
+                name="ruangan"
+                value={ruangan.nama}
+                disabled
+                helper="Ruangan ini dipilih otomatis sesuai layanan yang sedang kamu buka."
+              />
+
               <div className="grid gap-5 md:grid-cols-2">
-                <div>
-                  <label htmlFor="field-tanggal" className="block text-sm font-semibold text-slate-700 mb-2">
-                    Tanggal
-                  </label>
-                  <input
-                    id="field-tanggal"
-                    type="date"
-                    value={form.tanggal}
-                    min={todayStr}
-                    onChange={(e) => handleChange('tanggal', e.target.value)}
-                    className="w-full rounded-xl border border-slate-300 px-4 py-3 outline-none focus:ring-2 focus:ring-blue-200"
-                    aria-required="true"
-                  />
-                </div>
+                <FormField
+                  label="Tanggal"
+                  name="tanggal"
+                  type="date"
+                  value={form.tanggal}
+                  min={todayStr}
+                  onChange={(e) => handleChange('tanggal', e.target.value)}
+                  helper="Pilih tanggal penggunaan ruangan terlebih dahulu."
+                  required
+                />
 
                 <div>
-                  <label htmlFor="field-jam-kosong" className="block text-sm font-semibold text-slate-700 mb-2">
+                  <label className="mb-2 block text-sm font-semibold text-slate-700">
                     Jam Kosong Tersedia
                   </label>
-                  <div id="field-jam-kosong" className="rounded-xl border border-slate-300 bg-slate-50 px-4 py-3 text-slate-700 min-h-[52px]">
+                  <div className="min-h-[92px] rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4 text-slate-700">
                     {availableRanges.length > 0 ? (
-                      <div className="flex flex-wrap gap-2">
-                        {availableRanges.map((slot, index) => (
-                          <span
-                            key={index}
-                            className="inline-block rounded-full bg-emerald-100 px-3 py-1 text-sm font-medium text-emerald-700"
-                          >
-                            {slot.start} - {slot.end}
-                          </span>
-                        ))}
-                      </div>
+                      <>
+                        <p className="mb-3 text-sm text-slate-500">
+                          Slot berikut masih bisa dipilih untuk tanggal {form.tanggal}.
+                        </p>
+                        <div className="flex flex-wrap gap-2">
+                          {availableRanges.map((slot, index) => (
+                            <span
+                              key={`${slot.start}-${slot.end}-${index}`}
+                              className="inline-block rounded-full bg-emerald-100 px-3 py-1 text-sm font-medium text-emerald-700"
+                            >
+                              {slot.start} - {slot.end}
+                            </span>
+                          ))}
+                        </div>
+                      </>
                     ) : (
-                      <span className="text-rose-600 font-medium">
-                        Tidak ada slot kosong
-                      </span>
+                      <div className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-medium text-rose-700">
+                        Tidak ada slot kosong pada tanggal ini. Silakan pilih tanggal lain.
+                      </div>
                     )}
                   </div>
                 </div>
               </div>
 
               <div className="grid gap-5 md:grid-cols-2">
-                <div>
-                  <label htmlFor="field-jam-mulai" className="block text-sm font-semibold text-slate-700 mb-2">
-                    Jam Mulai
-                  </label>
-                  <select
-                    id="field-jam-mulai"
-                    value={form.jamMulai}
-                    onChange={(e) => handleChange('jamMulai', e.target.value)}
-                    className="w-full rounded-xl border border-slate-300 px-4 py-3 outline-none focus:ring-2 focus:ring-blue-200"
-                    aria-required="true"
-                    aria-invalid={waktuTidakValid || bentrok}
-                  >
-                    <option value="">Pilih jam mulai</option>
-                    {allTimeOptions.map((time) => (
-                      <option key={time} value={time}>
-                        {time}
-                      </option>
-                    ))}
-                  </select>
-                </div>
+                <FormField
+                  as="select"
+                  label="Jam Mulai"
+                  name="jamMulai"
+                  value={form.jamMulai}
+                  onChange={(e) => handleChange('jamMulai', e.target.value)}
+                  required
+                  error={waktuTidakValid || bentrok ? 'Periksa lagi slot waktu yang dipilih.' : ''}
+                  options={[
+                    { value: '', label: 'Pilih jam mulai' },
+                    ...allTimeOptions.map((time) => ({ value: time, label: time })),
+                  ]}
+                />
 
-                <div>
-                  <label htmlFor="field-jam-selesai" className="block text-sm font-semibold text-slate-700 mb-2">
-                    Jam Selesai <span className="text-slate-400">(Maks. 3 jam)</span>
-                  </label>
-                  <select
-                    id="field-jam-selesai"
-                    value={form.jamSelesai}
-                    onChange={(e) => handleChange('jamSelesai', e.target.value)}
-                    className="w-full rounded-xl border border-slate-300 px-4 py-3 outline-none focus:ring-2 focus:ring-blue-200"
-                    aria-required="true"
-                    aria-invalid={waktuTidakValid || bentrok || melebihiBatas}
-                  >
-                    <option value="">Pilih jam selesai</option>
-                    {endOptions.map((time) => (
-                      <option key={time} value={time}>
-                        {time}
-                      </option>
-                    ))}
-                  </select>
-                </div>
+                <FormField
+                  as="select"
+                  label="Jam Selesai"
+                  name="jamSelesai"
+                  value={form.jamSelesai}
+                  onChange={(e) => handleChange('jamSelesai', e.target.value)}
+                  required
+                  error={
+                    waktuTidakValid || bentrok || melebihiBatas
+                      ? 'Pilih jam selesai yang valid (maksimal 3 jam).'
+                      : ''
+                  }
+                  helper="Durasi peminjaman maksimal 3 jam."
+                  options={[
+                    { value: '', label: 'Pilih jam selesai' },
+                    ...endOptions.map((time) => ({ value: time, label: time })),
+                  ]}
+                />
               </div>
 
               {(bentrok || melebihiBatas || waktuTidakValid) && (
-                <div className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-rose-700 font-medium" role="alert" aria-live="polite">
-                  {waktuTidakValid && 'Jam selesai harus lebih besar dari jam mulai.'}
-                  {!waktuTidakValid && melebihiBatas && 'Durasi peminjaman maksimal 3 jam.'}
-                  {!waktuTidakValid && !melebihiBatas && bentrok && 'Jam yang kamu pilih bentrok dengan jadwal yang sudah ada.'}
+                <div role="alert" aria-live="polite">
+                  <StateCard
+                    title="Jadwal belum valid"
+                    message={
+                      waktuTidakValid
+                        ? 'Jam selesai harus lebih besar dari jam mulai.'
+                        : melebihiBatas
+                          ? 'Durasi peminjaman maksimal 3 jam.'
+                          : 'Jam yang kamu pilih bentrok dengan jadwal yang sudah ada.'
+                    }
+                    variant="error"
+                  />
                 </div>
               )}
 
               {!bentrok && !melebihiBatas && !waktuTidakValid && form.jamMulai && form.jamSelesai && (
-                <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-emerald-700 font-medium" role="status" aria-live="polite">
-                  Slot waktu yang kamu pilih tersedia.
+                <div role="status" aria-live="polite" className="space-y-3">
+                  <StateCard
+                    title="Slot waktu tersedia"
+                    message="Waktu yang kamu pilih bisa diajukan untuk peminjaman ruangan."
+                    variant="success"
+                  />
+                  <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
+                    Ringkasan: <span className="font-semibold">{form.tanggal}</span>, pukul{' '}
+                    <span className="font-semibold">
+                      {form.jamMulai} - {form.jamSelesai}
+                    </span>{' '}
+                    ({durasiMenit} menit).
+                  </div>
                 </div>
               )}
 
-              {submitError && (
-                <div className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-rose-700 font-medium" role="alert" aria-live="polite">
-                  {submitError}
-                </div>
-              )}
-
-              <div>
-                <label htmlFor="field-keperluan" className="block text-sm font-semibold text-slate-700 mb-2">
-                  Keperluan
-                </label>
-                <textarea
-                  id="field-keperluan"
-                  rows="4"
-                  value={form.keperluan}
-                  onChange={(e) => handleChange('keperluan', e.target.value)}
-                  placeholder="Tuliskan keperluan penggunaan ruangan..."
-                  className="w-full rounded-xl border border-slate-300 px-4 py-3 outline-none focus:ring-2 focus:ring-blue-200"
-                  aria-required="true"
-                />
-              </div>
+              <FormField
+                as="textarea"
+                label="Keperluan"
+                name="keperluan"
+                rows={4}
+                value={form.keperluan}
+                onChange={(e) => handleChange('keperluan', e.target.value)}
+                placeholder="Tuliskan keperluan penggunaan ruangan..."
+                required
+              />
 
               <div className="flex flex-wrap gap-4 pt-2">
-                <Link
-                  to="/layanan"
-                  className="inline-block rounded-xl bg-slate-200 px-6 py-3 font-semibold text-slate-800 transition hover:bg-slate-300"
-                >
+                <Button to="/layanan" variant="secondary">
                   Kembali
-                </Link>
+                </Button>
 
-                <button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="inline-block rounded-xl bg-blue-600 px-6 py-3 font-semibold text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
-                >
+                <Button type="submit" disabled={isSubmitting} variant="primary">
                   {isSubmitting ? 'Mengirim...' : 'Ajukan'}
-                </button>
+                </Button>
               </div>
             </form>
           </div>
         </div>
 
-        {/* Jadwal terisi */}
-        <div className="rounded-3xl border border-slate-200 bg-white shadow-sm overflow-hidden mb-12">
+        <div className="mb-12 overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
           <div className="border-b border-slate-200 px-6 py-5">
             <h2 className="text-2xl font-bold">Jadwal Terisi</h2>
             <p className="mt-2 text-slate-600">
               Jadwal ini menampilkan slot yang sudah digunakan pada tanggal yang dipilih.
             </p>
+            <div className="mt-4 inline-flex rounded-full bg-slate-100 px-4 py-2 text-sm font-medium text-slate-700">
+              Tanggal aktif: {form.tanggal}
+            </div>
           </div>
 
           <div className="overflow-x-auto">
@@ -541,8 +504,12 @@ function PeminjamanRuangan() {
                   ))
                 ) : (
                   <tr>
-                    <td colSpan="4" className="px-6 py-6 text-center text-slate-500">
-                      Belum ada jadwal terisi pada tanggal ini.
+                    <td colSpan="4" className="px-6 py-6">
+                      <StateCard
+                        title="Belum ada jadwal terisi"
+                        message="Tidak ada penggunaan ruangan pada tanggal ini, jadi kamu bisa memilih slot yang tersedia di atas."
+                        variant="info"
+                      />
                     </td>
                   </tr>
                 )}
@@ -551,28 +518,25 @@ function PeminjamanRuangan() {
           </div>
         </div>
 
-        {/* Kontak */}
         <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
-          <h2 className="text-2xl md:text-3xl font-bold mb-4">
-            Kontak Peminjaman Ruangan
-          </h2>
+          <h2 className="mb-4 text-2xl font-bold md:text-3xl">Butuh bantuan lebih lanjut?</h2>
 
-          <p className="text-slate-700 leading-8 mb-6">
-            Untuk konfirmasi lebih lanjut terkait peminjaman ruangan, silakan
-            hubungi admin laboratorium melalui halaman kontak atau email.
+          <p className="mb-6 leading-8 text-slate-700">
+            Untuk konfirmasi lebih lanjut terkait peminjaman ruangan, silakan hubungi admin laboratorium melalui halaman kontak atau email langsung.
           </p>
 
-          <div className="flex flex-wrap gap-4">
-            <Link
-              to="/kontak"
-              className="inline-block rounded-xl bg-blue-600 px-6 py-3 font-semibold text-white transition hover:bg-blue-700"
-            >
-              Lihat Kontak
-            </Link>
+          <div className="flex flex-wrap gap-3">
+            <Button to="/kontak" variant="primary">
+              Hubungi Admin
+            </Button>
+
+            <Button to="/layanan" variant="outline">
+              Lihat Layanan Lain
+            </Button>
 
             <a
               href="mailto:lab-elins@ugm.ac.id"
-              className="inline-block rounded-xl border border-blue-600 px-6 py-3 font-semibold text-blue-700 transition hover:bg-blue-50"
+              className="inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 focus-visible:ring-offset-2"
             >
               Kirim Email
             </a>
@@ -581,6 +545,17 @@ function PeminjamanRuangan() {
       </div>
     </div>
   )
+}
+
+function createInitialForm(todayStr) {
+  return {
+    nama: '',
+    identitas: '',
+    tanggal: todayStr,
+    jamMulai: '',
+    jamSelesai: '',
+    keperluan: '',
+  }
 }
 
 export default PeminjamanRuangan
