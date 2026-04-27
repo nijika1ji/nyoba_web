@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
+import { submitPeminjamanRuangan } from '../utils/submissionService'
 
 function PeminjamanRuangan() {
   const ruangan = {
@@ -68,10 +69,40 @@ function PeminjamanRuangan() {
   })
 
   const [submitted, setSubmitted] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [submitError, setSubmitError] = useState('')
 
   useEffect(() => {
     localStorage.setItem(storageKey, JSON.stringify(form))
   }, [form])
+
+  useEffect(() => {
+    if (!submitted) return undefined
+
+    const timeoutId = window.setTimeout(() => {
+      setForm({
+        nama: '',
+        identitas: '',
+        tanggal: todayStr,
+        jamMulai: '',
+        jamSelesai: '',
+        keperluan: '',
+      })
+      setSubmitted(false)
+    }, 4000)
+
+    return () => window.clearTimeout(timeoutId)
+  }, [submitted, todayStr])
+
+  useEffect(() => {
+    if (!submitError) return undefined
+
+    const timeoutId = window.setTimeout(() => {
+      setSubmitError('')
+    }, 4000)
+
+    return () => window.clearTimeout(timeoutId)
+  }, [submitError])
 
   const timeToMinutes = (time) => {
     const [hour, minute] = time.split(':').map(Number)
@@ -183,10 +214,18 @@ function PeminjamanRuangan() {
     }))
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
 
-    if (!form.nama || !form.identitas || !form.tanggal || !form.jamMulai || !form.jamSelesai || !form.keperluan) {
+    if (
+      !form.nama ||
+      !form.identitas ||
+      !form.tanggal ||
+      !form.jamMulai ||
+      !form.jamSelesai ||
+      !form.keperluan ||
+      isSubmitting
+    ) {
       return
     }
 
@@ -194,19 +233,21 @@ function PeminjamanRuangan() {
       return
     }
 
-    setSubmitted(true)
-    localStorage.removeItem(storageKey)
-    setTimeout(() => {
-      setForm({
-        nama: '',
-        identitas: '',
-        tanggal: todayStr,
-        jamMulai: '',
-        jamSelesai: '',
-        keperluan: '',
+    setIsSubmitting(true)
+    setSubmitError('')
+
+    try {
+      await submitPeminjamanRuangan({
+        ruangan: ruangan.nama,
+        ...form,
       })
-      setSubmitted(false)
-    }, 4000)
+      localStorage.removeItem(storageKey)
+      setSubmitted(true)
+    } catch {
+      setSubmitError('Pengajuan belum berhasil dikirim. Silakan coba lagi.')
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -262,8 +303,14 @@ function PeminjamanRuangan() {
             <h2 className="text-2xl font-bold mb-6">Form Reservasi Ruangan</h2>
 
             {submitted && (
-              <div className="mb-6 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
+              <div className="mb-6 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800" role="status" aria-live="polite">
                 <strong>Pengajuan berhasil dikirim!</strong> Form akan direset otomatis. (Backend belum dihubungkan, ini hanya demo frontend.)
+              </div>
+            )}
+
+            {submitError && (
+              <div className="mb-6 rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800" role="alert" aria-live="polite">
+                {submitError}
               </div>
             )}
 
@@ -412,6 +459,12 @@ function PeminjamanRuangan() {
                 </div>
               )}
 
+              {submitError && (
+                <div className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-rose-700 font-medium" role="alert" aria-live="polite">
+                  {submitError}
+                </div>
+              )}
+
               <div>
                 <label htmlFor="field-keperluan" className="block text-sm font-semibold text-slate-700 mb-2">
                   Keperluan
@@ -437,9 +490,10 @@ function PeminjamanRuangan() {
 
                 <button
                   type="submit"
-                  className="inline-block rounded-xl bg-blue-600 px-6 py-3 font-semibold text-white transition hover:bg-blue-700"
+                  disabled={isSubmitting}
+                  className="inline-block rounded-xl bg-blue-600 px-6 py-3 font-semibold text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
                 >
-                  Ajukan
+                  {isSubmitting ? 'Mengirim...' : 'Ajukan'}
                 </button>
               </div>
             </form>

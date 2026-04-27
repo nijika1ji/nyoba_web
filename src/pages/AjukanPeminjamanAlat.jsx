@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import alatLab from '../data/alatLab'
 import { findAlatBySlug, slugify } from '../utils/alatHelpers'
+import { submitPeminjamanAlat } from '../utils/submissionService'
 
 function AjukanPeminjamanAlat() {
   const { slug } = useParams()
@@ -40,10 +41,42 @@ function AjukanPeminjamanAlat() {
   })
 
   const [submitted, setSubmitted] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [submitError, setSubmitError] = useState('')
 
   useEffect(() => {
     localStorage.setItem(storageKey, JSON.stringify(form))
   }, [form, storageKey])
+
+  useEffect(() => {
+    if (!submitted) return undefined
+
+    const timeoutId = window.setTimeout(() => {
+      setForm({
+        nama: '',
+        identitas: '',
+        kontak: '',
+        keperluan: '',
+        jumlah: 1,
+        tanggalPinjam: '',
+        tanggalKembali: '',
+        catatan: '',
+      })
+      setSubmitted(false)
+    }, 4000)
+
+    return () => window.clearTimeout(timeoutId)
+  }, [submitted])
+
+  useEffect(() => {
+    if (!submitError) return undefined
+
+    const timeoutId = window.setTimeout(() => {
+      setSubmitError('')
+    }, 4000)
+
+    return () => window.clearTimeout(timeoutId)
+  }, [submitError])
 
   const today = new Date().toISOString().split('T')[0]
 
@@ -89,25 +122,26 @@ function AjukanPeminjamanAlat() {
     isJumlahInvalid ||
     alat.tersedia === 0
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault()
-    if (isInvalid) return
+    if (isInvalid || isSubmitting) return
 
-    setSubmitted(true)
-    localStorage.removeItem(storageKey)
-    setTimeout(() => {
-      setForm({
-        nama: '',
-        identitas: '',
-        kontak: '',
-        keperluan: '',
-        jumlah: 1,
-        tanggalPinjam: '',
-        tanggalKembali: '',
-        catatan: '',
+    setIsSubmitting(true)
+    setSubmitError('')
+
+    try {
+      await submitPeminjamanAlat({
+        alatId: alat.id,
+        alatNama: alat.nama,
+        ...form,
       })
-      setSubmitted(false)
-    }, 4000)
+      localStorage.removeItem(storageKey)
+      setSubmitted(true)
+    } catch {
+      setSubmitError('Pengajuan belum berhasil dikirim. Silakan coba lagi.')
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -131,8 +165,14 @@ function AjukanPeminjamanAlat() {
           </p>
 
           {submitted && (
-            <div className="mt-4 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
+            <div className="mt-4 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800" role="status" aria-live="polite">
               <strong>Pengajuan berhasil dikirim!</strong> Form akan direset otomatis. (Backend belum dihubungkan, ini hanya demo frontend.)
+            </div>
+          )}
+
+          {submitError && (
+            <div className="mt-4 rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800" role="alert" aria-live="polite">
+              {submitError}
             </div>
           )}
 
@@ -235,10 +275,10 @@ function AjukanPeminjamanAlat() {
             <div className="md:col-span-2 flex flex-wrap gap-3 pt-2">
               <button
                 type="submit"
-                disabled={isInvalid}
+                disabled={isInvalid || isSubmitting}
                 className="inline-flex items-center rounded-md bg-amber-400 px-6 py-3 text-sm font-bold uppercase text-black shadow-[0_4px_0_0_#92400e] disabled:cursor-not-allowed disabled:opacity-60"
               >
-                Kirim Pengajuan
+                {isSubmitting ? 'Mengirim...' : 'Kirim Pengajuan'}
               </button>
 
               <Link
