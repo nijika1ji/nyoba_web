@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { Link } from 'react-router'
+import { Link } from 'react-router-dom'
 
 function PeminjamanRuangan() {
   const ruangan = {
@@ -74,9 +74,7 @@ function PeminjamanRuangan() {
 
   const allTimeOptions = generateTimeOptions()
 
-  const occupiedSlots = useMemo(() => {
-    return bookedSchedules[form.tanggal] || []
-  }, [form.tanggal])
+  const occupiedSlots = bookedSchedules[form.tanggal] || []
 
   const availableRanges = useMemo(() => {
     const openStart = timeToMinutes('08:00')
@@ -143,16 +141,13 @@ function PeminjamanRuangan() {
   const melebihiBatas = durasiMenit > 180
   const waktuTidakValid = form.jamMulai && form.jamSelesai && durasiMenit <= 0
 
-  const endOptions = useMemo(() => {
-    if (!form.jamMulai) return allTimeOptions
-
-    const mulai = timeToMinutes(form.jamMulai)
-
-    return allTimeOptions.filter((time) => {
-      const current = timeToMinutes(time)
-      return current > mulai && current <= mulai + 180
-    })
-  }, [form.jamMulai])
+  const endOptions = !form.jamMulai
+    ? allTimeOptions
+    : allTimeOptions.filter((time) => {
+        const mulai = timeToMinutes(form.jamMulai)
+        const current = timeToMinutes(time)
+        return current > mulai && current <= mulai + 180
+      })
 
   const handleChange = (field, value) => {
     setForm((prev) => ({

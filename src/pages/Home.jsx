@@ -1,5 +1,4 @@
-import { Link } from 'react-router'
-import { motion } from 'framer-motion'
+import { Link } from 'react-router-dom'
 import projects from '../data/projects'
 
 function Home() {

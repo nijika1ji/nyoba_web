@@ -1,5 +1,3 @@
-import { motion } from 'framer-motion'
-
 function Profil() {
   const fadeUp = {
     hidden: { opacity: 0, y: 28 },

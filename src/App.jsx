@@ -14,6 +14,7 @@ import PeminjamanAlat from './pages/PeminjamanAlat'
 import DetailPeminjamanAlat from './pages/DetailPeminjamanAlat'
 import AjukanPeminjamanAlat from './pages/AjukanPeminjamanAlat'
 import PeminjamanRuangan from './pages/PeminjamanRuangan'
+import NotFound from './pages/NotFound'
 
 function App() {
   return (
@@ -45,6 +46,7 @@ function App() {
             path="/layanan/peminjaman-ruangan"
             element={<PeminjamanRuangan />}
           />
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </main>
 

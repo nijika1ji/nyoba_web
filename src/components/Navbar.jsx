@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { NavLink, Link, useLocation } from 'react-router'
+import { NavLink, Link, useLocation } from 'react-router-dom'
 
 function Navbar() {
   const location = useLocation()
