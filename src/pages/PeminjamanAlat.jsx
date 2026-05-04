@@ -1,20 +1,37 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router'
-import alatLab from '../data/alatLab'
-import {
-  getStatusLabel,
-  getStatusTextClass,
-  slugify,
-} from '../utils/alatHelpers'
+import { apiRequest } from '../services/api'
+import { getStatusLabel, getStatusTextClass } from '../utils/alatHelpers'
 
 function PeminjamanAlat() {
   const [search, setSearch] = useState('')
+  const [alatList, setAlatList] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
+
+  useEffect(() => {
+    async function fetchAlat() {
+      try {
+        setLoading(true)
+        setError('')
+
+        const data = await apiRequest('/alat')
+        setAlatList(data)
+      } catch (err) {
+        setError(err.message)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchAlat()
+  }, [])
 
   const filteredAlat = useMemo(() => {
-    return alatLab.filter((item) =>
+    return alatList.filter((item) =>
       item.nama.toLowerCase().includes(search.toLowerCase())
     )
-  }, [search])
+  }, [search, alatList])
 
   return (
     <div className="min-h-screen bg-[linear-gradient(180deg,#f8fafc_0%,#eef5ff_45%,#ffffff_100%)]">
@@ -48,20 +65,33 @@ function PeminjamanAlat() {
           </div>
         </div>
 
-        {filteredAlat.length === 0 ? (
+        {loading && (
+          <div className="rounded-3xl bg-white p-10 text-center text-slate-500 shadow-sm">
+            Memuat data alat...
+          </div>
+        )}
+
+        {!loading && error && (
+          <div className="rounded-3xl border border-rose-200 bg-rose-50 p-10 text-center text-rose-700">
+            {error}
+          </div>
+        )}
+
+        {!loading && !error && filteredAlat.length === 0 && (
           <div className="rounded-3xl border border-dashed border-slate-300 bg-white p-10 text-center text-slate-500 shadow-sm">
             Alat tidak ditemukan.
           </div>
-        ) : (
+        )}
+
+        {!loading && !error && filteredAlat.length > 0 && (
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-5">
             {filteredAlat.map((item) => {
               const status = getStatusLabel(item)
-              const slug = slugify(item.nama)
 
               return (
                 <Link
                   key={item.id}
-                  to={`/layanan/peminjaman-alat/${slug}`}
+                  to={`/layanan/peminjaman-alat/${item.slug}`}
                   className="group overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-xl"
                 >
                   <div className="relative flex aspect-[4/3] items-center justify-center bg-slate-50 p-5">

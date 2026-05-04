@@ -1,31 +1,59 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router'
-import alatLab from '../data/alatLab'
-import {
-  findAlatBySlug,
-  getStatusLabel,
-  getStatusTextClass,
-  slugify,
-} from '../utils/alatHelpers'
+import { apiRequest } from '../services/api'
+import { getStatusLabel, getStatusTextClass } from '../utils/alatHelpers'
 
 function DetailPeminjamanAlat() {
   const { slug } = useParams()
+
+  const [alat, setAlat] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
   const [imgError, setImgError] = useState(false)
 
-  const alat = findAlatBySlug(slug, alatLab)
+  useEffect(() => {
+    async function fetchDetailAlat() {
+      try {
+        setLoading(true)
+        setError('')
+        setImgError(false)
 
-  if (!alat) {
+        const data = await apiRequest(`/alat/${slug}`)
+        setAlat(data)
+      } catch (err) {
+        setError(err.message)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchDetailAlat()
+  }, [slug])
+
+  if (loading) {
     return (
       <div className="min-h-screen bg-[linear-gradient(180deg,#f8fafc_0%,#eef5ff_45%,#ffffff_100%)]">
         <div className="mx-auto max-w-5xl px-6 py-14">
-          <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
-            <h1 className="mb-4 text-3xl font-bold text-slate-900">
-              Alat tidak ditemukan
+          <div className="rounded-3xl bg-white p-10 text-center text-slate-500 shadow-sm">
+            Memuat detail alat...
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  if (error || !alat) {
+    return (
+      <div className="min-h-screen bg-[linear-gradient(180deg,#f8fafc_0%,#eef5ff_45%,#ffffff_100%)]">
+        <div className="mx-auto max-w-5xl px-6 py-14">
+          <div className="rounded-3xl border border-rose-200 bg-rose-50 p-8 shadow-sm">
+            <h1 className="mb-4 text-3xl font-bold text-rose-800">
+              {error || 'Alat tidak ditemukan'}
             </h1>
 
             <Link
               to="/layanan/peminjaman-alat"
-              className="inline-block rounded-xl bg-gray-100 px-5 py-3 font-medium text-gray-800 transition hover:bg-gray-200"
+              className="inline-block rounded-xl bg-white px-5 py-3 font-medium text-gray-800 transition hover:bg-gray-100"
             >
               Kembali
             </Link>
@@ -99,7 +127,7 @@ function DetailPeminjamanAlat() {
 
               <div className="mt-7">
                 <Link
-                  to={`/layanan/peminjaman-alat/${slugify(alat.nama)}/ajukan`}
+                  to={`/layanan/peminjaman-alat/${alat.slug}/ajukan`}
                   className="inline-flex items-center justify-center rounded-xl bg-amber-400 px-6 py-3 text-sm font-black uppercase text-black shadow-[0_4px_0_0_#92400e] transition hover:translate-y-[1px] hover:shadow-[0_3px_0_0_#92400e]"
                 >
                   Ajukan Peminjaman

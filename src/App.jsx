@@ -14,6 +14,7 @@ import PeminjamanAlat from './pages/PeminjamanAlat'
 import DetailPeminjamanAlat from './pages/DetailPeminjamanAlat'
 import AjukanPeminjamanAlat from './pages/AjukanPeminjamanAlat'
 import PeminjamanRuangan from './pages/PeminjamanRuangan'
+import TambahAlat from './pages/admin/TambahAlat'
 
 function App() {
   return (
@@ -30,6 +31,7 @@ function App() {
           <Route path="/project/:jenis/:id" element={<ProjectDetail />} />
           <Route path="/layanan" element={<Layanan />} />
           <Route path="/kontak" element={<Kontak />} />
+          <Route path="/admin/alat/tambah" element={<TambahAlat />} />
 
           <Route path="/layanan/peminjaman-alat" element={<PeminjamanAlat />} />
           <Route
