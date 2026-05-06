@@ -1,13 +1,8 @@
-import { useMemo, useState } from 'react'
-import { Link } from 'react-router'
+import { useEffect, useMemo, useState } from 'react'
+import { Link } from 'react-router-dom'
+import { apiRequest } from '../services/api'
 
 function PeminjamanRuangan() {
-  const ruangan = {
-    nama: 'Laboratorium Riset Elektronika dan Instrumentasi (SIC 3.01)',
-    fungsi: 'Diskusi dan kegiatan riset',
-    jamOperasional: 'Senin – Jumat, 08.00 – 16.00 WIB',
-  }
-
   const today = new Date()
   const oneDay = 24 * 60 * 60 * 1000
 
@@ -18,28 +13,14 @@ function PeminjamanRuangan() {
     return `${year}-${month}-${day}`
   }
 
-  const addDays = (date, days) => new Date(date.getTime() + days * oneDay)
-
   const todayStr = formatDate(today)
-  const tomorrowStr = formatDate(addDays(today, 1))
-  const dayAfterStr = formatDate(addDays(today, 2))
 
-  // Dummy jadwal terisi
-  const bookedSchedules = {
-    [todayStr]: [
-      { start: '08:00', end: '10:00', kegiatan: 'Diskusi Kelompok' },
-      { start: '13:00', end: '15:00', kegiatan: 'Diskusi Riset' },
-    ],
-    [tomorrowStr]: [
-      { start: '09:00', end: '11:00', kegiatan: 'Rapat Tim Penelitian' },
-      { start: '14:00', end: '15:30', kegiatan: 'Pembahasan Proposal' },
-    ],
-    [dayAfterStr]: [
-      { start: '10:00', end: '12:00', kegiatan: 'Koordinasi Kegiatan' },
-    ],
-  }
+  const [ruanganList, setRuanganList] = useState([])
+  const [jadwalList, setJadwalList] = useState([])
+  const [loading, setLoading] = useState(true)
 
   const [form, setForm] = useState({
+    ruanganId: '',
     nama: '',
     identitas: '',
     tanggal: todayStr,
@@ -47,6 +28,10 @@ function PeminjamanRuangan() {
     jamSelesai: '',
     keperluan: '',
   })
+
+  const selectedRuangan = ruanganList.find(
+    (item) => String(item.id) === String(form.ruanganId)
+  )
 
   const timeToMinutes = (time) => {
     const [hour, minute] = time.split(':').map(Number)
@@ -74,9 +59,54 @@ function PeminjamanRuangan() {
 
   const allTimeOptions = generateTimeOptions()
 
-  const occupiedSlots = useMemo(() => {
-    return bookedSchedules[form.tanggal] || []
+  const fetchRuangan = async () => {
+    try {
+      const data = await apiRequest('/ruangan')
+      setRuanganList(data)
+
+      if (data.length > 0) {
+        setForm((prev) => ({
+          ...prev,
+          ruanganId: prev.ruanganId || data[0].id,
+        }))
+      }
+    } catch (error) {
+      alert(error.message)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const fetchJadwal = async () => {
+    if (!form.tanggal) return
+
+    try {
+      const data = await apiRequest(`/peminjaman-ruangan?tanggal=${form.tanggal}`)
+      setJadwalList(data)
+    } catch (error) {
+      alert(error.message)
+    }
+  }
+
+  useEffect(() => {
+    fetchRuangan()
+  }, [])
+
+  useEffect(() => {
+    fetchJadwal()
   }, [form.tanggal])
+
+  const occupiedSlots = useMemo(() => {
+    return jadwalList
+      .filter((item) => String(item.ruanganId) === String(form.ruanganId))
+      .filter((item) => ['pending', 'disetujui'].includes(item.status))
+      .map((item) => ({
+        start: item.jamMulai,
+        end: item.jamSelesai,
+        kegiatan: item.keperluan,
+        status: item.status,
+      }))
+  }, [jadwalList, form.ruanganId])
 
   const availableRanges = useMemo(() => {
     const openStart = timeToMinutes('08:00')
@@ -159,14 +189,23 @@ function PeminjamanRuangan() {
       ...prev,
       [field]: value,
       ...(field === 'tanggal' ? { jamMulai: '', jamSelesai: '' } : {}),
+      ...(field === 'ruanganId' ? { jamMulai: '', jamSelesai: '' } : {}),
       ...(field === 'jamMulai' ? { jamSelesai: '' } : {}),
     }))
   }
 
-  const handleSubmit = (e) => {
-    e.preventDefault()
+  const handleSubmit = async (event) => {
+    event.preventDefault()
 
-    if (!form.nama || !form.identitas || !form.tanggal || !form.jamMulai || !form.jamSelesai || !form.keperluan) {
+    if (
+      !form.ruanganId ||
+      !form.nama ||
+      !form.identitas ||
+      !form.tanggal ||
+      !form.jamMulai ||
+      !form.jamSelesai ||
+      !form.keperluan
+    ) {
       alert('Mohon lengkapi semua data terlebih dahulu.')
       return
     }
@@ -186,132 +225,178 @@ function PeminjamanRuangan() {
       return
     }
 
-    alert(
-      'Pengajuan peminjaman berhasil dikirim (frontend dummy). Nanti saat backend dibuat, data akan disimpan ke database.'
-    )
+    try {
+      await apiRequest('/peminjaman-ruangan', {
+        method: 'POST',
+        body: JSON.stringify({
+          ruangan_id: form.ruanganId,
+          nama_peminjam: form.nama,
+          identitas: form.identitas,
+          tanggal: form.tanggal,
+          jam_mulai: form.jamMulai,
+          jam_selesai: form.jamSelesai,
+          keperluan: form.keperluan,
+        }),
+      })
 
-    setForm({
-      nama: '',
-      identitas: '',
-      tanggal: todayStr,
-      jamMulai: '',
-      jamSelesai: '',
-      keperluan: '',
-    })
+      alert('Pengajuan peminjaman ruangan berhasil dikirim.')
+
+      setForm((prev) => ({
+        ...prev,
+        nama: '',
+        identitas: '',
+        jamMulai: '',
+        jamSelesai: '',
+        keperluan: '',
+      }))
+
+      fetchJadwal()
+    } catch (error) {
+      alert(error.message)
+    }
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-slate-50 px-6 py-14">
+        Memuat data ruangan...
+      </div>
+    )
+  }
+
+  if (ruanganList.length === 0) {
+    return (
+      <div className="min-h-screen bg-slate-50 px-6 py-14">
+        <div className="mx-auto max-w-3xl rounded-3xl bg-white p-8 shadow-sm">
+          <h1 className="text-3xl font-bold text-slate-900">
+            Belum ada data ruangan
+          </h1>
+          <p className="mt-3 text-slate-600">
+            Tambahkan ruangan dulu lewat halaman admin.
+          </p>
+          <Link
+            to="/admin/ruangan"
+            className="mt-5 inline-flex rounded-xl bg-blue-600 px-5 py-3 font-semibold text-white"
+          >
+            Kelola Ruangan
+          </Link>
+        </div>
+      </div>
+    )
   }
 
   return (
     <div className="min-h-screen bg-[linear-gradient(180deg,#f8fafc_0%,#eef5ff_55%,#ffffff_100%)]">
-      <div className="max-w-6xl mx-auto px-6 py-14">
-        <div className="max-w-4xl mx-auto text-center mb-12">
-          <p className="text-sm uppercase tracking-[0.25em] text-blue-700 font-semibold mb-3">
+      <div className="mx-auto max-w-6xl px-6 py-14">
+        <div className="mx-auto mb-12 max-w-4xl text-center">
+          <p className="mb-3 text-sm font-semibold uppercase tracking-[0.25em] text-blue-700">
             Layanan
           </p>
 
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">
+          <h1 className="mb-4 text-4xl font-bold md:text-5xl">
             Peminjaman Ruangan
           </h1>
 
-          <p className="text-gray-700 leading-8">
+          <p className="leading-8 text-gray-700">
             Halaman ini menampilkan informasi ruangan, jadwal penggunaan,
-            ketersediaan waktu, dan form pengajuan peminjaman ruangan laboratorium.
+            ketersediaan waktu, dan form pengajuan peminjaman ruangan
+            laboratorium.
           </p>
         </div>
 
-        {/* Info ruangan */}
-        <div className="grid gap-8 lg:grid-cols-[360px_1fr] mb-12">
+        <div className="mb-12 grid gap-8 lg:grid-cols-[360px_1fr]">
           <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
-            <h2 className="text-2xl font-bold mb-5">Informasi Ruangan</h2>
+            <h2 className="mb-5 text-2xl font-bold">Informasi Ruangan</h2>
 
-            <div className="space-y-5 text-slate-700 leading-8">
+            <div className="space-y-5 leading-8 text-slate-700">
               <div>
                 <p className="font-semibold text-slate-900">Nama Ruangan</p>
-                <p>{ruangan.nama}</p>
+                <p>{selectedRuangan?.nama}</p>
               </div>
 
               <div>
                 <p className="font-semibold text-slate-900">Fungsi</p>
-                <p>{ruangan.fungsi}</p>
+                <p>{selectedRuangan?.fungsi || '-'}</p>
               </div>
 
               <div>
-                <p className="font-semibold text-slate-900">Jam Operasional</p>
-                <p>{ruangan.jamOperasional}</p>
+                <p className="font-semibold text-slate-900">
+                  Jam Operasional
+                </p>
+                <p>{selectedRuangan?.jamOperasional || '-'}</p>
               </div>
 
               <div className="rounded-2xl bg-slate-50 p-5">
-                <p className="text-sm text-slate-500 mb-2">Status Saat Ini</p>
-                <span className="inline-block rounded-full bg-emerald-100 px-4 py-2 text-sm font-semibold text-emerald-700">
-                  Tersedia
+                <p className="mb-2 text-sm text-slate-500">Status Saat Ini</p>
+                <span className="inline-block rounded-full bg-emerald-100 px-4 py-2 text-sm font-semibold uppercase text-emerald-700">
+                  {selectedRuangan?.status || 'tersedia'}
                 </span>
               </div>
             </div>
           </div>
 
-          {/* Form reservasi */}
           <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
-            <h2 className="text-2xl font-bold mb-6">Form Reservasi Ruangan</h2>
+            <h2 className="mb-6 text-2xl font-bold">
+              Form Reservasi Ruangan
+            </h2>
 
             <form onSubmit={handleSubmit} className="space-y-5">
               <div className="grid gap-5 md:grid-cols-2">
-                <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-2">
-                    Nama
-                  </label>
-                  <input
-                    type="text"
-                    value={form.nama}
-                    onChange={(e) => handleChange('nama', e.target.value)}
-                    placeholder="Masukkan nama"
-                    className="w-full rounded-xl border border-slate-300 px-4 py-3 outline-none focus:ring-2 focus:ring-blue-200"
-                  />
-                </div>
+                <Field
+                  label="Nama"
+                  value={form.nama}
+                  onChange={(value) => handleChange('nama', value)}
+                  placeholder="Masukkan nama"
+                />
 
-                <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-2">
-                    NIM / Identitas
-                  </label>
-                  <input
-                    type="text"
-                    value={form.identitas}
-                    onChange={(e) => handleChange('identitas', e.target.value)}
-                    placeholder="Masukkan NIM atau identitas"
-                    className="w-full rounded-xl border border-slate-300 px-4 py-3 outline-none focus:ring-2 focus:ring-blue-200"
-                  />
-                </div>
+                <Field
+                  label="NIM / Identitas"
+                  value={form.identitas}
+                  onChange={(value) => handleChange('identitas', value)}
+                  placeholder="Masukkan NIM atau identitas"
+                />
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-2">
+                <label className="mb-2 block text-sm font-semibold text-slate-700">
                   Ruangan
                 </label>
-                <input
-                  type="text"
-                  value={ruangan.nama}
-                  disabled
-                  className="w-full rounded-xl border border-slate-300 bg-slate-100 px-4 py-3 text-slate-600"
-                />
+                <select
+                  value={form.ruanganId}
+                  onChange={(event) =>
+                    handleChange('ruanganId', event.target.value)
+                  }
+                  className="w-full rounded-xl border border-slate-300 px-4 py-3 outline-none focus:ring-2 focus:ring-blue-200"
+                >
+                  {ruanganList.map((item) => (
+                    <option key={item.id} value={item.id}>
+                      {item.nama}
+                    </option>
+                  ))}
+                </select>
               </div>
 
               <div className="grid gap-5 md:grid-cols-2">
                 <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-2">
+                  <label className="mb-2 block text-sm font-semibold text-slate-700">
                     Tanggal
                   </label>
                   <input
                     type="date"
                     value={form.tanggal}
                     min={todayStr}
-                    onChange={(e) => handleChange('tanggal', e.target.value)}
+                    onChange={(event) =>
+                      handleChange('tanggal', event.target.value)
+                    }
                     className="w-full rounded-xl border border-slate-300 px-4 py-3 outline-none focus:ring-2 focus:ring-blue-200"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-2">
+                  <label className="mb-2 block text-sm font-semibold text-slate-700">
                     Jam Kosong Tersedia
                   </label>
-                  <div className="rounded-xl border border-slate-300 bg-slate-50 px-4 py-3 text-slate-700 min-h-[52px]">
+                  <div className="min-h-[52px] rounded-xl border border-slate-300 bg-slate-50 px-4 py-3 text-slate-700">
                     {availableRanges.length > 0 ? (
                       <div className="flex flex-wrap gap-2">
                         {availableRanges.map((slot, index) => (
@@ -324,7 +409,7 @@ function PeminjamanRuangan() {
                         ))}
                       </div>
                     ) : (
-                      <span className="text-rose-600 font-medium">
+                      <span className="font-medium text-rose-600">
                         Tidak ada slot kosong
                       </span>
                     )}
@@ -334,12 +419,14 @@ function PeminjamanRuangan() {
 
               <div className="grid gap-5 md:grid-cols-2">
                 <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-2">
+                  <label className="mb-2 block text-sm font-semibold text-slate-700">
                     Jam Mulai
                   </label>
                   <select
                     value={form.jamMulai}
-                    onChange={(e) => handleChange('jamMulai', e.target.value)}
+                    onChange={(event) =>
+                      handleChange('jamMulai', event.target.value)
+                    }
                     className="w-full rounded-xl border border-slate-300 px-4 py-3 outline-none focus:ring-2 focus:ring-blue-200"
                   >
                     <option value="">Pilih jam mulai</option>
@@ -352,12 +439,15 @@ function PeminjamanRuangan() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-2">
-                    Jam Selesai <span className="text-slate-400">(Maks. 3 jam)</span>
+                  <label className="mb-2 block text-sm font-semibold text-slate-700">
+                    Jam Selesai{' '}
+                    <span className="text-slate-400">(Maks. 3 jam)</span>
                   </label>
                   <select
                     value={form.jamSelesai}
-                    onChange={(e) => handleChange('jamSelesai', e.target.value)}
+                    onChange={(event) =>
+                      handleChange('jamSelesai', event.target.value)
+                    }
                     className="w-full rounded-xl border border-slate-300 px-4 py-3 outline-none focus:ring-2 focus:ring-blue-200"
                   >
                     <option value="">Pilih jam selesai</option>
@@ -371,27 +461,39 @@ function PeminjamanRuangan() {
               </div>
 
               {(bentrok || melebihiBatas || waktuTidakValid) && (
-                <div className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-rose-700 font-medium">
-                  {waktuTidakValid && 'Jam selesai harus lebih besar dari jam mulai.'}
-                  {!waktuTidakValid && melebihiBatas && 'Durasi peminjaman maksimal 3 jam.'}
-                  {!waktuTidakValid && !melebihiBatas && bentrok && 'Jam yang kamu pilih bentrok dengan jadwal yang sudah ada.'}
+                <div className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 font-medium text-rose-700">
+                  {waktuTidakValid &&
+                    'Jam selesai harus lebih besar dari jam mulai.'}
+                  {!waktuTidakValid &&
+                    melebihiBatas &&
+                    'Durasi peminjaman maksimal 3 jam.'}
+                  {!waktuTidakValid &&
+                    !melebihiBatas &&
+                    bentrok &&
+                    'Jam yang kamu pilih bentrok dengan jadwal yang sudah ada.'}
                 </div>
               )}
 
-              {!bentrok && !melebihiBatas && !waktuTidakValid && form.jamMulai && form.jamSelesai && (
-                <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-emerald-700 font-medium">
-                  Slot waktu yang kamu pilih tersedia.
-                </div>
-              )}
+              {!bentrok &&
+                !melebihiBatas &&
+                !waktuTidakValid &&
+                form.jamMulai &&
+                form.jamSelesai && (
+                  <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 font-medium text-emerald-700">
+                    Slot waktu yang kamu pilih tersedia.
+                  </div>
+                )}
 
               <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-2">
+                <label className="mb-2 block text-sm font-semibold text-slate-700">
                   Keperluan
                 </label>
                 <textarea
                   rows="4"
                   value={form.keperluan}
-                  onChange={(e) => handleChange('keperluan', e.target.value)}
+                  onChange={(event) =>
+                    handleChange('keperluan', event.target.value)
+                  }
                   placeholder="Tuliskan keperluan penggunaan ruangan..."
                   className="w-full rounded-xl border border-slate-300 px-4 py-3 outline-none focus:ring-2 focus:ring-blue-200"
                 />
@@ -416,12 +518,12 @@ function PeminjamanRuangan() {
           </div>
         </div>
 
-        {/* Jadwal terisi */}
-        <div className="rounded-3xl border border-slate-200 bg-white shadow-sm overflow-hidden mb-12">
+        <div className="mb-12 overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
           <div className="border-b border-slate-200 px-6 py-5">
             <h2 className="text-2xl font-bold">Jadwal Terisi</h2>
             <p className="mt-2 text-slate-600">
-              Jadwal ini menampilkan slot yang sudah digunakan pada tanggal yang dipilih.
+              Jadwal ini menampilkan slot yang sudah digunakan pada tanggal
+              yang dipilih.
             </p>
           </div>
 
@@ -440,24 +542,31 @@ function PeminjamanRuangan() {
                 {occupiedSlots.length > 0 ? (
                   occupiedSlots.map((item, index) => (
                     <tr
-                      key={`${item.start}-${item.end}`}
+                      key={`${item.start}-${item.end}-${index}`}
                       className={index % 2 === 0 ? 'bg-white' : 'bg-slate-50/50'}
                     >
-                      <td className="px-6 py-4 text-slate-700">{form.tanggal}</td>
+                      <td className="px-6 py-4 text-slate-700">
+                        {form.tanggal}
+                      </td>
                       <td className="px-6 py-4 text-slate-700">
                         {item.start} - {item.end}
                       </td>
                       <td className="px-6 py-4">
-                        <span className="inline-block rounded-full bg-amber-100 px-4 py-2 text-sm font-semibold text-amber-700">
-                          Dipakai
+                        <span className="inline-block rounded-full bg-amber-100 px-4 py-2 text-sm font-semibold uppercase text-amber-700">
+                          {item.status}
                         </span>
                       </td>
-                      <td className="px-6 py-4 text-slate-700">{item.kegiatan}</td>
+                      <td className="px-6 py-4 text-slate-700">
+                        {item.kegiatan}
+                      </td>
                     </tr>
                   ))
                 ) : (
                   <tr>
-                    <td colSpan="4" className="px-6 py-6 text-center text-slate-500">
+                    <td
+                      colSpan="4"
+                      className="px-6 py-6 text-center text-slate-500"
+                    >
                       Belum ada jadwal terisi pada tanggal ini.
                     </td>
                   </tr>
@@ -467,13 +576,12 @@ function PeminjamanRuangan() {
           </div>
         </div>
 
-        {/* Kontak */}
         <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
-          <h2 className="text-2xl md:text-3xl font-bold mb-4">
+          <h2 className="mb-4 text-2xl font-bold md:text-3xl">
             Kontak Peminjaman Ruangan
           </h2>
 
-          <p className="text-slate-700 leading-8 mb-6">
+          <p className="mb-6 leading-8 text-slate-700">
             Untuk konfirmasi lebih lanjut terkait peminjaman ruangan, silakan
             hubungi admin laboratorium melalui halaman kontak atau email.
           </p>
@@ -495,6 +603,23 @@ function PeminjamanRuangan() {
           </div>
         </div>
       </div>
+    </div>
+  )
+}
+
+function Field({ label, value, onChange, placeholder }) {
+  return (
+    <div>
+      <label className="mb-2 block text-sm font-semibold text-slate-700">
+        {label}
+      </label>
+      <input
+        type="text"
+        value={value}
+        onChange={(event) => onChange(event.target.value)}
+        placeholder={placeholder}
+        className="w-full rounded-xl border border-slate-300 px-4 py-3 outline-none focus:ring-2 focus:ring-blue-200"
+      />
     </div>
   )
 }

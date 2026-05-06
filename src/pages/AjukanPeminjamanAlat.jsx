@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import alatLab from '../data/alatLab'
 import { findAlatBySlug, slugify } from '../utils/alatHelpers'
+import { apiRequest } from '../services/api'
 
 function AjukanPeminjamanAlat() {
   const { slug } = useParams()
@@ -60,19 +61,30 @@ function AjukanPeminjamanAlat() {
     isJumlahInvalid ||
     alat.tersedia === 0
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault()
     if (isInvalid) return
 
-    alert(
-      `Pengajuan frontend berhasil dibuat.\n\n` +
-        `Alat: ${alat.nama}\n` +
-        `Nama: ${form.nama}\n` +
-        `Jumlah: ${form.jumlah}\n` +
-        `Tanggal pinjam: ${form.tanggalPinjam}\n` +
-        `Tanggal kembali: ${form.tanggalKembali}\n\n` +
-        `Backend belum dihubungkan.`
-    )
+    try {
+      await apiRequest('/peminjaman-alat', {
+        method: 'POST',
+        body: JSON.stringify({
+          alat_id: alat.id,
+          nama_peminjam: form.nama,
+          identitas: form.identitas,
+          kontak: form.kontak,
+          jumlah: form.jumlah,
+          tanggal_pinjam: form.tanggalPinjam,
+          tanggal_kembali: form.tanggalKembali,
+          keperluan: form.keperluan,
+          catatan: form.catatan,
+        }),
+      })
+
+      alert('Pengajuan peminjaman berhasil dikirim. Menunggu persetujuan admin.')
+    } catch (error) {
+      alert(error.message)
+    }
   }
 
   return (

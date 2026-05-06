@@ -1,6 +1,12 @@
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 
 function AdminDashboard() {
+    const navigate = useNavigate()
+
+  const handleLogout = () => {
+    localStorage.removeItem('adminToken')
+    navigate('/admin/login')
+  }
   return (
     <div className="min-h-screen bg-slate-50 px-6 py-12">
       <div className="mx-auto max-w-6xl">
@@ -8,13 +14,22 @@ function AdminDashboard() {
           Admin
         </p>
 
+        <div className="flex flex-wrap items-center justify-between gap-4">
         <h1 className="text-4xl font-bold text-slate-950">
-          Dashboard Admin
+            Dashboard Admin
         </h1>
 
+        <button
+            onClick={handleLogout}
+            className="rounded-xl bg-red-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-red-700"
+        >
+            Logout
+        </button>
+        </div>
+
         <p className="mt-4 max-w-3xl text-slate-600 leading-8">
-          Halaman pusat untuk mengelola data website. Untuk tahap ini fitur
-          yang tersedia adalah kelola data alat.
+            {/* Halaman pusat untuk mengelola data website. Untuk tahap ini fitur
+            yang tersedia adalah kelola data alat. */}
         </p>
 
         <div className="mt-8 grid gap-6 md:grid-cols-3">
@@ -24,6 +39,13 @@ function AdminDashboard() {
             to="/admin/alat"
             action="Buka Kelola Alat"
           />
+
+          <AdminCard
+            title="Peminjaman Alat"
+            description="Lihat pengajuan peminjaman alat dan ubah statusnya."
+            to="/admin/peminjaman-alat"
+            action="Kelola Peminjaman"
+        />
 
           <AdminCard
             title="Tambah Alat"
@@ -38,6 +60,20 @@ function AdminDashboard() {
             to="/layanan/peminjaman-alat"
             action="Lihat Katalog"
           />
+
+          <AdminCard
+            title="Kelola Ruangan"
+            description="Tambah, edit, hapus, dan lihat data ruangan laboratorium."
+            to="/admin/ruangan"
+            action="Kelola Ruangan"
+            />
+          <AdminCard
+            title="Peminjaman Ruangan"
+            description="Lihat pengajuan peminjaman ruangan dan ubah statusnya."
+            to="/admin/peminjaman-ruangan"
+            action="Kelola Peminjaman"
+            />
+            
         </div>
       </div>
     </div>
@@ -46,6 +82,7 @@ function AdminDashboard() {
 
 function AdminCard({ title, description, to, action }) {
   return (
+    
     <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-lg">
       <h2 className="text-2xl font-bold text-slate-950">{title}</h2>
 

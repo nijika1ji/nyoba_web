@@ -212,6 +212,103 @@ app.get("/api/alat/:slug", async (req, res) => {
 // =======================
 
 app.get("/api/peminjaman-alat", async (req, res) => {
+  app.post("/api/peminjaman-alat", async (req, res) => {
+  try {
+    const {
+      alat_id,
+      nama_peminjam,
+      identitas,
+      kontak,
+      jumlah,
+      tanggal_pinjam,
+      tanggal_kembali,
+      keperluan,
+      catatan,
+    } = req.body;
+
+    if (
+      !alat_id ||
+      !nama_peminjam ||
+      !identitas ||
+      !kontak ||
+      !jumlah ||
+      !tanggal_pinjam ||
+      !tanggal_kembali ||
+      !keperluan
+    ) {
+      return res.status(400).json({
+        message: "Data pengajuan peminjaman alat belum lengkap",
+      });
+    }
+
+    if (new Date(tanggal_kembali) < new Date(tanggal_pinjam)) {
+      return res.status(400).json({
+        message: "Tanggal kembali tidak boleh sebelum tanggal pinjam",
+      });
+    }
+
+    const [alatRows] = await db.query("SELECT * FROM alat WHERE id = ?", [
+      alat_id,
+    ]);
+
+    if (alatRows.length === 0) {
+      return res.status(404).json({
+        message: "Alat tidak ditemukan",
+      });
+    }
+
+    const alat = alatRows[0];
+
+    if (Number(jumlah) < 1 || Number(jumlah) > Number(alat.tersedia)) {
+      return res.status(400).json({
+        message: "Jumlah peminjaman melebihi stok tersedia",
+      });
+    }
+
+    const [result] = await db.query(
+      `
+      INSERT INTO peminjaman_alat
+      (
+        alat_id,
+        nama_peminjam,
+        identitas,
+        kontak,
+        jumlah,
+        tanggal_pinjam,
+        tanggal_kembali,
+        keperluan,
+        catatan,
+        status
+      )
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending')
+      `,
+      [
+        alat_id,
+        nama_peminjam,
+        identitas,
+        kontak,
+        Number(jumlah),
+        tanggal_pinjam,
+        tanggal_kembali,
+        keperluan,
+        catatan || "",
+      ]
+    );
+
+    res.status(201).json({
+      message: "Pengajuan peminjaman alat berhasil dikirim",
+      data: {
+        id: result.insertId,
+        status: "pending",
+      },
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Gagal membuat pengajuan peminjaman alat",
+      error: error.message,
+    });
+  }
+});
   try {
     const [rows] = await db.query(`
       SELECT 
@@ -226,6 +323,104 @@ app.get("/api/peminjaman-alat", async (req, res) => {
   } catch (error) {
     res.status(500).json({
       message: "Gagal mengambil data peminjaman alat",
+      error: error.message,
+    });
+  }
+});
+
+app.post("/api/peminjaman-alat", async (req, res) => {
+  try {
+    const {
+      alat_id,
+      nama_peminjam,
+      identitas,
+      kontak,
+      jumlah,
+      tanggal_pinjam,
+      tanggal_kembali,
+      keperluan,
+      catatan,
+    } = req.body;
+
+    if (
+      !alat_id ||
+      !nama_peminjam ||
+      !identitas ||
+      !kontak ||
+      !jumlah ||
+      !tanggal_pinjam ||
+      !tanggal_kembali ||
+      !keperluan
+    ) {
+      return res.status(400).json({
+        message: "Data pengajuan peminjaman alat belum lengkap",
+      });
+    }
+
+    if (new Date(tanggal_kembali) < new Date(tanggal_pinjam)) {
+      return res.status(400).json({
+        message: "Tanggal kembali tidak boleh sebelum tanggal pinjam",
+      });
+    }
+
+    const [alatRows] = await db.query("SELECT * FROM alat WHERE id = ?", [
+      alat_id,
+    ]);
+
+    if (alatRows.length === 0) {
+      return res.status(404).json({
+        message: "Alat tidak ditemukan",
+      });
+    }
+
+    const alat = alatRows[0];
+
+    if (Number(jumlah) < 1 || Number(jumlah) > Number(alat.tersedia)) {
+      return res.status(400).json({
+        message: "Jumlah peminjaman melebihi stok tersedia",
+      });
+    }
+
+    const [result] = await db.query(
+      `
+      INSERT INTO peminjaman_alat
+      (
+        alat_id,
+        nama_peminjam,
+        identitas,
+        kontak,
+        jumlah,
+        tanggal_pinjam,
+        tanggal_kembali,
+        keperluan,
+        catatan,
+        status
+      )
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending')
+      `,
+      [
+        alat_id,
+        nama_peminjam,
+        identitas,
+        kontak,
+        Number(jumlah),
+        tanggal_pinjam,
+        tanggal_kembali,
+        keperluan,
+        catatan || "",
+      ]
+    );
+
+    res.status(201).json({
+      message: "Pengajuan peminjaman alat berhasil dikirim",
+      data: {
+        id: result.insertId,
+        status: "pending",
+      },
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Gagal membuat pengajuan peminjaman alat",
       error: error.message,
     });
   }
@@ -426,7 +621,7 @@ app.delete("/api/alat/:id", requireAdmin, async (req, res) => {
   }
 });
 
-app.put("/api/peminjaman-alat/:id/status", async (req, res) => {
+app.put("/api/peminjaman-alat/:id/status", requireAdmin, async (req, res) => {
   try {
     const { id } = req.params;
     const { status } = req.body;
@@ -444,6 +639,67 @@ app.put("/api/peminjaman-alat/:id/status", async (req, res) => {
       return res.status(400).json({
         message: "Status tidak valid",
       });
+    }
+
+    const [peminjamanRows] = await db.query(
+      "SELECT * FROM peminjaman_alat WHERE id = ?",
+      [id]
+    );
+
+    if (peminjamanRows.length === 0) {
+      return res.status(404).json({
+        message: "Data peminjaman tidak ditemukan",
+      });
+    }
+
+    const peminjaman = peminjamanRows[0];
+    const statusLama = peminjaman.status;
+    const jumlah = Number(peminjaman.jumlah);
+
+    const [alatRows] = await db.query("SELECT * FROM alat WHERE id = ?", [
+      peminjaman.alat_id,
+    ]);
+
+    if (alatRows.length === 0) {
+      return res.status(404).json({
+        message: "Data alat tidak ditemukan",
+      });
+    }
+
+    const alat = alatRows[0];
+
+    const statusAktif = ["disetujui", "dipinjam"];
+    const statusLamaAktif = statusAktif.includes(statusLama);
+    const statusBaruAktif = statusAktif.includes(status);
+
+    if (!statusLamaAktif && statusBaruAktif) {
+      if (Number(alat.tersedia) < jumlah) {
+        return res.status(400).json({
+          message: "Stok alat tidak mencukupi",
+        });
+      }
+
+      await db.query(
+        `
+        UPDATE alat SET
+          tersedia = tersedia - ?,
+          dipinjam = dipinjam + ?
+        WHERE id = ?
+        `,
+        [jumlah, jumlah, peminjaman.alat_id]
+      );
+    }
+
+    if (statusLamaAktif && !statusBaruAktif) {
+      await db.query(
+        `
+        UPDATE alat SET
+          tersedia = tersedia + ?,
+          dipinjam = dipinjam - ?
+        WHERE id = ?
+        `,
+        [jumlah, jumlah, peminjaman.alat_id]
+      );
     }
 
     await db.query("UPDATE peminjaman_alat SET status = ? WHERE id = ?", [
@@ -468,7 +724,9 @@ app.put("/api/peminjaman-alat/:id/status", async (req, res) => {
 
 app.get("/api/ruangan", async (req, res) => {
   try {
-    const [rows] = await db.query("SELECT * FROM ruangan ORDER BY nama ASC");
+    const [rows] = await db.query(
+  "SELECT * FROM ruangan WHERE is_deleted = 0 ORDER BY nama ASC"
+);
 
     const data = rows.map((item) => ({
       id: item.id,
@@ -483,6 +741,126 @@ app.get("/api/ruangan", async (req, res) => {
   } catch (error) {
     res.status(500).json({
       message: "Gagal mengambil data ruangan",
+      error: error.message,
+    });
+  }
+});
+
+app.post("/api/ruangan", requireAdmin, async (req, res) => {
+  try {
+    const {
+      nama,
+      fungsi = "",
+      jamOperasional = "",
+      status = "tersedia",
+    } = req.body;
+
+    if (!nama) {
+      return res.status(400).json({
+        message: "Nama ruangan wajib diisi",
+      });
+    }
+
+    const slug = slugify(nama);
+
+    const [result] = await db.query(
+      `
+      INSERT INTO ruangan
+      (
+        nama,
+        slug,
+        fungsi,
+        jam_operasional,
+        status
+      )
+      VALUES (?, ?, ?, ?, ?)
+      `,
+      [nama, slug, fungsi, jamOperasional, status]
+    );
+
+    res.status(201).json({
+      message: "Ruangan berhasil ditambahkan",
+      data: {
+        id: result.insertId,
+        slug,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Gagal menambahkan ruangan",
+      error: error.message,
+    });
+  }
+});
+
+app.put("/api/ruangan/:id", requireAdmin, async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const [currentRows] = await db.query(
+      "SELECT * FROM ruangan WHERE id = ?",
+      [id]
+    );
+
+    if (currentRows.length === 0) {
+      return res.status(404).json({
+        message: "Ruangan tidak ditemukan",
+      });
+    }
+
+    const current = currentRows[0];
+
+    const {
+      nama = current.nama,
+      fungsi = current.fungsi,
+      jamOperasional = current.jam_operasional,
+      status = current.status,
+    } = req.body;
+
+    await db.query(
+      `
+      UPDATE ruangan SET
+        nama = ?,
+        slug = ?,
+        fungsi = ?,
+        jam_operasional = ?,
+        status = ?
+      WHERE id = ?
+      `,
+      [nama, slugify(nama), fungsi, jamOperasional, status, id]
+    );
+
+    res.json({
+      message: "Ruangan berhasil diperbarui",
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Gagal memperbarui ruangan",
+      error: error.message,
+    });
+  }
+});
+
+app.delete("/api/ruangan/:id", requireAdmin, async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const [rows] = await db.query("SELECT * FROM ruangan WHERE id = ?", [id]);
+
+    if (rows.length === 0) {
+      return res.status(404).json({
+        message: "Ruangan tidak ditemukan",
+      });
+    }
+
+    await db.query("UPDATE ruangan SET is_deleted = 1 WHERE id = ?", [id]);
+
+    res.json({
+      message: "Ruangan berhasil dihapus dari tampilan",
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Gagal menghapus ruangan",
       error: error.message,
     });
   }
@@ -623,6 +1001,48 @@ app.post("/api/peminjaman-ruangan", async (req, res) => {
   } catch (error) {
     res.status(500).json({
       message: "Gagal membuat pengajuan peminjaman ruangan",
+      error: error.message,
+    });
+  }
+});
+
+app.put("/api/peminjaman-ruangan/:id/status", requireAdmin, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body;
+
+    const allowedStatus = ["pending", "disetujui", "ditolak", "dibatalkan"];
+
+    if (!allowedStatus.includes(status)) {
+      return res.status(400).json({
+        message: "Status tidak valid",
+      });
+    }
+
+    const [rows] = await db.query(
+      "SELECT * FROM peminjaman_ruangan WHERE id = ?",
+      [id]
+    );
+
+    if (rows.length === 0) {
+      return res.status(404).json({
+        message: "Data peminjaman ruangan tidak ditemukan",
+      });
+    }
+
+    await db.query("UPDATE peminjaman_ruangan SET status = ? WHERE id = ?", [
+      status,
+      id,
+    ]);
+
+    res.json({
+      message: "Status peminjaman ruangan berhasil diperbarui",
+    });
+  } catch (error) {
+    console.error("ERROR UPDATE STATUS RUANGAN:", error);
+
+    res.status(500).json({
+      message: "Gagal memperbarui status peminjaman ruangan",
       error: error.message,
     });
   }

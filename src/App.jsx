@@ -20,6 +20,9 @@ import KelolaAlat from './pages/admin/KelolaAlat'
 import EditAlat from './pages/admin/EditAlat'
 import AdminLogin from './pages/admin/AdminLogin'
 import ProtectedAdminRoute from './pages/admin/ProtectedAdminRoute'
+import KelolaPeminjamanAlat from './pages/admin/KelolaPeminjamanAlat'
+import KelolaRuangan from './pages/admin/KelolaRuangan'
+import KelolaPeminjamanRuangan from './pages/admin/KelolaPeminjamanRuangan'
 
 function App() {
   return (
@@ -36,11 +39,8 @@ function App() {
           <Route path="/project/:jenis/:id" element={<ProjectDetail />} />
           <Route path="/layanan" element={<Layanan />} />
           <Route path="/kontak" element={<Kontak />} />
-          <Route path="/admin" element={<AdminDashboard />} />
-          <Route path="/admin/alat" element={<KelolaAlat />} />
-          <Route path="/admin/alat/tambah" element={<TambahAlat />} />
-          <Route path="/admin/alat/edit/:id" element={<EditAlat />} />
           <Route path="/admin/login" element={<AdminLogin />} />
+          
 
           <Route
             path="/admin"
@@ -65,6 +65,42 @@ function App() {
             element={
               <ProtectedAdminRoute>
                 <TambahAlat />
+              </ProtectedAdminRoute>
+            }
+          />
+
+          <Route
+            path="/admin/alat/edit/:id"
+            element={
+              <ProtectedAdminRoute>
+                <EditAlat />
+              </ProtectedAdminRoute>
+            }
+          />
+
+          <Route
+            path="/admin/peminjaman-alat"
+            element={
+              <ProtectedAdminRoute>
+                <KelolaPeminjamanAlat />
+              </ProtectedAdminRoute>
+            }
+          />
+
+          <Route
+            path="/admin/ruangan"
+            element={
+              <ProtectedAdminRoute>
+                <KelolaRuangan />
+              </ProtectedAdminRoute>
+            }
+          />
+
+          <Route
+            path="/admin/peminjaman-ruangan"
+            element={
+              <ProtectedAdminRoute>
+                <KelolaPeminjamanRuangan />
               </ProtectedAdminRoute>
             }
           />
