@@ -58,6 +58,34 @@ const upload = multer({
 
 app.use(cors());
 app.use(express.json());
+
+function requireAdmin(req, res, next) {
+  const token = req.headers["x-admin-token"];
+
+  if (!token || token !== process.env.ADMIN_TOKEN) {
+    return res.status(401).json({
+      message: "Akses admin ditolak",
+    });
+  }
+
+  next();
+}
+
+app.post("/api/admin/login", (req, res) => {
+  const { password } = req.body;
+
+  if (password !== process.env.ADMIN_PASSWORD) {
+    return res.status(401).json({
+      message: "Password admin salah",
+    });
+  }
+
+  res.json({
+    message: "Login admin berhasil",
+    token: process.env.ADMIN_TOKEN,
+  });
+});
+
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 function parseSpesifikasi(value) {
@@ -203,7 +231,7 @@ app.get("/api/peminjaman-alat", async (req, res) => {
   }
 });
 
-app.post("/api/alat", upload.single("gambar"), async (req, res) => {
+app.post("/api/alat", requireAdmin, upload.single("gambar"), async (req, res) => {
   try {
     const {
       nama,
@@ -280,7 +308,7 @@ app.post("/api/alat", upload.single("gambar"), async (req, res) => {
   }
 });
 
-app.put("/api/alat/:id", upload.single("gambar"), async (req, res) => {
+app.put("/api/alat/:id", requireAdmin, upload.single("gambar"), async (req, res) => {
   try {
     const { id } = req.params;
 
@@ -358,6 +386,41 @@ app.put("/api/alat/:id", upload.single("gambar"), async (req, res) => {
   } catch (error) {
     res.status(500).json({
       message: "Gagal memperbarui alat",
+      error: error.message,
+    });
+  }
+});
+
+app.delete("/api/alat/:id", requireAdmin, async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const [rows] = await db.query("SELECT * FROM alat WHERE id = ?", [id]);
+
+    if (rows.length === 0) {
+      return res.status(404).json({
+        message: "Alat tidak ditemukan",
+      });
+    }
+
+    const alat = rows[0];
+
+    await db.query("DELETE FROM alat WHERE id = ?", [id]);
+
+    if (alat.gambar && alat.gambar.startsWith("/uploads")) {
+      const filePath = path.join(__dirname, alat.gambar);
+
+      if (fs.existsSync(filePath)) {
+        fs.unlinkSync(filePath);
+      }
+    }
+
+    res.json({
+      message: "Alat berhasil dihapus",
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Gagal menghapus alat",
       error: error.message,
     });
   }

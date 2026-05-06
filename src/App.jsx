@@ -14,7 +14,12 @@ import PeminjamanAlat from './pages/PeminjamanAlat'
 import DetailPeminjamanAlat from './pages/DetailPeminjamanAlat'
 import AjukanPeminjamanAlat from './pages/AjukanPeminjamanAlat'
 import PeminjamanRuangan from './pages/PeminjamanRuangan'
+import AdminDashboard from './pages/admin/AdminDashboard'
 import TambahAlat from './pages/admin/TambahAlat'
+import KelolaAlat from './pages/admin/KelolaAlat'
+import EditAlat from './pages/admin/EditAlat'
+import AdminLogin from './pages/admin/AdminLogin'
+import ProtectedAdminRoute from './pages/admin/ProtectedAdminRoute'
 
 function App() {
   return (
@@ -31,7 +36,38 @@ function App() {
           <Route path="/project/:jenis/:id" element={<ProjectDetail />} />
           <Route path="/layanan" element={<Layanan />} />
           <Route path="/kontak" element={<Kontak />} />
+          <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/admin/alat" element={<KelolaAlat />} />
           <Route path="/admin/alat/tambah" element={<TambahAlat />} />
+          <Route path="/admin/alat/edit/:id" element={<EditAlat />} />
+          <Route path="/admin/login" element={<AdminLogin />} />
+
+          <Route
+            path="/admin"
+            element={
+              <ProtectedAdminRoute>
+                <AdminDashboard />
+              </ProtectedAdminRoute>
+            }
+          />
+
+          <Route
+            path="/admin/alat"
+            element={
+              <ProtectedAdminRoute>
+                <KelolaAlat />
+              </ProtectedAdminRoute>
+            }
+          />
+
+          <Route
+            path="/admin/alat/tambah"
+            element={
+              <ProtectedAdminRoute>
+                <TambahAlat />
+              </ProtectedAdminRoute>
+            }
+          />
 
           <Route path="/layanan/peminjaman-alat" element={<PeminjamanAlat />} />
           <Route

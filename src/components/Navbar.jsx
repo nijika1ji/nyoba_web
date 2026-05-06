@@ -29,33 +29,32 @@ function Navbar() {
   }
 
   return (
-            <header className="sticky top-0 z-50">
-              <nav className="bg-[linear-gradient(90deg,#24384d,#16283c,#071426)] backdrop-blur-md border-b border-white/10 shadow-lg">
-                <div className="max-w-7xl mx-auto px-4 md:px-6">
-                  <div className="h-24 flex items-center justify-between">
-                    <Link to="/" className="flex items-center shrink-0">
-                      {/* LOGO: atur ukuran/posisi logo di sini */}
-                      <div className="flex h-[72px] w-[72px] shrink-0 items-center justify-center">
-                        <img
-                          src="/logo-lab.png"
-                          alt="Logo ELINS"
-                          className="h-[80px] w-auto object-contain translate-x-[8px] translate-y-[-5px]"
-                        />
-                      </div>
+    <header className="sticky top-0 z-50">
+      <nav className="bg-[linear-gradient(90deg,#24384d,#16283c,#071426)] backdrop-blur-md border-b border-white/10 shadow-lg">
+        <div className="max-w-7xl mx-auto px-4 md:px-6">
+          <div className="h-24 flex items-center justify-between">
+            <Link to="/" className="flex items-center shrink-0">
+              <div className="flex h-[72px] w-[72px] shrink-0 items-center justify-center">
+                <img
+                  src="/logo-lab.png"
+                  alt="Logo ELINS"
+                  className="h-[80px] w-auto object-contain translate-x-[8px] translate-y-[-5px]"
+                />
+              </div>
 
-                      {/* TEKS: atur ukuran/posisi tulisan di sini */}
-                      <div className="ml-[10px] flex flex-col justify-center leading-[0.92] translate-x-[0px] translate-y-[0px]">
-                        <p className="text-[18px] font-extrabold text-white md:text-[20px]">
-                          Laboratorium
-                        </p>
-                        <p className="text-[18px] font-extrabold text-white md:text-[20px]">
-                          Elektronika
-                        </p>
-                        <p className="text-[18px] font-extrabold text-white md:text-[20px]">
-                          dan Instrumentasi
-                        </p>
-                      </div>
-                    </Link>
+              <div className="ml-[10px] flex flex-col justify-center leading-[0.92] translate-x-[0px] translate-y-[0px]">
+                <p className="text-[18px] font-extrabold text-white md:text-[20px]">
+                  Laboratorium
+                </p>
+                <p className="text-[18px] font-extrabold text-white md:text-[20px]">
+                  Elektronika
+                </p>
+                <p className="text-[18px] font-extrabold text-white md:text-[20px]">
+                  dan Instrumentasi
+                </p>
+              </div>
+            </Link>
+
             {/* Desktop menu */}
             <div className="hidden md:flex items-center gap-2">
               <NavLink
@@ -138,7 +137,8 @@ function Navbar() {
                     <span className="text-xs">▼</span>
                   </span>
                 </button>
-                  <div className="absolute left-0 top-full pt-3 hidden group-hover:block">
+
+                <div className="absolute left-0 top-full pt-3 hidden group-hover:block">
                   <div className="w-72 rounded-2xl bg-zinc-900/95 shadow-2xl border border-white/10 overflow-hidden">
                     <Link
                       to="/layanan"
@@ -146,7 +146,7 @@ function Navbar() {
                     >
                       Informasi Layanan
                     </Link>
-                    
+
                     <Link
                       to="/layanan/peminjaman-alat"
                       className="block px-6 py-4 text-white text-base font-semibold hover:bg-white/10 transition"
