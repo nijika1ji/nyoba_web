@@ -212,7 +212,26 @@ app.get("/api/alat/:slug", async (req, res) => {
 // =======================
 
 app.get("/api/peminjaman-alat", async (req, res) => {
-  app.post("/api/peminjaman-alat", async (req, res) => {
+  try {
+    const [rows] = await db.query(`
+      SELECT 
+        peminjaman_alat.*,
+        alat.nama AS nama_alat
+      FROM peminjaman_alat
+      JOIN alat ON peminjaman_alat.alat_id = alat.id
+      ORDER BY peminjaman_alat.created_at DESC
+    `);
+
+    res.json(rows);
+  } catch (error) {
+    res.status(500).json({
+      message: "Gagal mengambil data peminjaman alat",
+      error: error.message,
+    });
+  }
+});
+
+app.post("/api/peminjaman-alat", async (req, res) => {
   try {
     const {
       alat_id,
@@ -305,24 +324,6 @@ app.get("/api/peminjaman-alat", async (req, res) => {
   } catch (error) {
     res.status(500).json({
       message: "Gagal membuat pengajuan peminjaman alat",
-      error: error.message,
-    });
-  }
-});
-  try {
-    const [rows] = await db.query(`
-      SELECT 
-        peminjaman_alat.*,
-        alat.nama AS nama_alat
-      FROM peminjaman_alat
-      JOIN alat ON peminjaman_alat.alat_id = alat.id
-      ORDER BY peminjaman_alat.created_at DESC
-    `);
-
-    res.json(rows);
-  } catch (error) {
-    res.status(500).json({
-      message: "Gagal mengambil data peminjaman alat",
       error: error.message,
     });
   }
