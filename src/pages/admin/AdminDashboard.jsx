@@ -73,6 +73,12 @@ function AdminDashboard() {
             to="/admin/peminjaman-ruangan"
             action="Kelola Peminjaman"
             />
+         <AdminCard
+            title="Kelola Project"
+            description="Tambah, edit, hapus, dan lihat data project penelitian maupun pengabdian."
+            to="/admin/project"
+            action="Kelola Project"
+            />
             
         </div>
       </div>

@@ -22,6 +22,12 @@ if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir, { recursive: true });
 }
 
+const projectUploadDir = path.join(__dirname, "uploads", "project");
+
+if (!fs.existsSync(projectUploadDir)) {
+  fs.mkdirSync(projectUploadDir, { recursive: true });
+}
+
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, uploadDir);
@@ -50,6 +56,30 @@ const fileFilter = (req, file, cb) => {
 
 const upload = multer({
   storage,
+  fileFilter,
+  limits: {
+    fileSize: 2 * 1024 * 1024,
+  },
+});
+
+const projectStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, projectUploadDir);
+  },
+  filename: (req, file, cb) => {
+    const ext = path.extname(file.originalname);
+    const safeName = file.originalname
+      .replace(ext, "")
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/(^-|-$)/g, "");
+
+    cb(null, `${Date.now()}-${safeName}${ext}`);
+  },
+});
+
+const uploadProject = multer({
+  storage: projectStorage,
   fileFilter,
   limits: {
     fileSize: 2 * 1024 * 1024,
@@ -125,6 +155,17 @@ function mapAlat(item) {
     dipinjam: item.dipinjam,
     maintenance: item.maintenance,
     spesifikasi: parseSpesifikasi(item.spesifikasi),
+  };
+}
+
+function mapProject(item) {
+  return {
+    id: item.id,
+    jenis: item.jenis,
+    judul: item.judul,
+    gambar: resolveImageUrl(item.gambar),
+    deskripsiSingkat: item.deskripsi_singkat,
+    deskripsiLengkap: item.deskripsi_lengkap,
   };
 }
 
@@ -714,6 +755,199 @@ app.put("/api/peminjaman-alat/:id/status", requireAdmin, async (req, res) => {
   } catch (error) {
     res.status(500).json({
       message: "Gagal memperbarui status peminjaman",
+      error: error.message,
+    });
+  }
+});
+
+// =======================
+// API PROJECT
+// =======================
+
+app.get("/api/project", async (req, res) => {
+  try {
+    const { jenis } = req.query;
+
+    let query = "SELECT * FROM project WHERE is_deleted = 0";
+    const params = [];
+
+    if (jenis) {
+      query += " AND jenis = ?";
+      params.push(jenis);
+    }
+
+    query += " ORDER BY created_at DESC";
+
+    const [rows] = await db.query(query, params);
+
+    res.json(rows.map(mapProject));
+  } catch (error) {
+    res.status(500).json({
+      message: "Gagal mengambil data project",
+      error: error.message,
+    });
+  }
+});
+
+app.get("/api/project/:jenis/:id", async (req, res) => {
+  try {
+    const { jenis, id } = req.params;
+
+    const [rows] = await db.query(
+      "SELECT * FROM project WHERE jenis = ? AND id = ? AND is_deleted = 0",
+      [jenis, id]
+    );
+
+    if (rows.length === 0) {
+      return res.status(404).json({
+        message: "Project tidak ditemukan",
+      });
+    }
+
+    res.json(mapProject(rows[0]));
+  } catch (error) {
+    res.status(500).json({
+      message: "Gagal mengambil detail project",
+      error: error.message,
+    });
+  }
+});
+
+app.post("/api/project", requireAdmin, uploadProject.single("gambar"), async (req, res) => {
+  try {
+    const {
+      jenis,
+      judul,
+      deskripsiSingkat = "",
+      deskripsiLengkap = "",
+    } = req.body;
+
+    if (!jenis || !judul) {
+      return res.status(400).json({
+        message: "Jenis dan judul project wajib diisi",
+      });
+    }
+
+    if (!["penelitian", "pengabdian"].includes(jenis)) {
+      return res.status(400).json({
+        message: "Jenis project tidak valid",
+      });
+    }
+
+    const gambarPath = req.file ? `/uploads/project/${req.file.filename}` : "";
+
+    const [result] = await db.query(
+      `
+      INSERT INTO project
+      (
+        jenis,
+        judul,
+        gambar,
+        deskripsi_singkat,
+        deskripsi_lengkap
+      )
+      VALUES (?, ?, ?, ?, ?)
+      `,
+      [jenis, judul, gambarPath, deskripsiSingkat, deskripsiLengkap]
+    );
+
+    res.status(201).json({
+      message: "Project berhasil ditambahkan",
+      data: {
+        id: result.insertId,
+        gambar: resolveImageUrl(gambarPath),
+      },
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Gagal menambahkan project",
+      error: error.message,
+    });
+  }
+});
+
+app.put("/api/project/:id", requireAdmin, uploadProject.single("gambar"), async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const [currentRows] = await db.query(
+      "SELECT * FROM project WHERE id = ?",
+      [id]
+    );
+
+    if (currentRows.length === 0) {
+      return res.status(404).json({
+        message: "Project tidak ditemukan",
+      });
+    }
+
+    const current = currentRows[0];
+
+    const {
+      jenis = current.jenis,
+      judul = current.judul,
+      deskripsiSingkat = current.deskripsi_singkat,
+      deskripsiLengkap = current.deskripsi_lengkap,
+    } = req.body;
+
+    if (!["penelitian", "pengabdian"].includes(jenis)) {
+      return res.status(400).json({
+        message: "Jenis project tidak valid",
+      });
+    }
+
+    const gambarPath = req.file
+      ? `/uploads/project/${req.file.filename}`
+      : current.gambar;
+
+    await db.query(
+      `
+      UPDATE project SET
+        jenis = ?,
+        judul = ?,
+        gambar = ?,
+        deskripsi_singkat = ?,
+        deskripsi_lengkap = ?
+      WHERE id = ?
+      `,
+      [jenis, judul, gambarPath, deskripsiSingkat, deskripsiLengkap, id]
+    );
+
+    res.json({
+      message: "Project berhasil diperbarui",
+      data: {
+        id,
+        gambar: resolveImageUrl(gambarPath),
+      },
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Gagal memperbarui project",
+      error: error.message,
+    });
+  }
+});
+
+app.delete("/api/project/:id", requireAdmin, async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const [rows] = await db.query("SELECT * FROM project WHERE id = ?", [id]);
+
+    if (rows.length === 0) {
+      return res.status(404).json({
+        message: "Project tidak ditemukan",
+      });
+    }
+
+    await db.query("UPDATE project SET is_deleted = 1 WHERE id = ?", [id]);
+
+    res.json({
+      message: "Project berhasil dihapus dari tampilan",
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Gagal menghapus project",
       error: error.message,
     });
   }

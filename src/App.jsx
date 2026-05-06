@@ -23,6 +23,7 @@ import ProtectedAdminRoute from './pages/admin/ProtectedAdminRoute'
 import KelolaPeminjamanAlat from './pages/admin/KelolaPeminjamanAlat'
 import KelolaRuangan from './pages/admin/KelolaRuangan'
 import KelolaPeminjamanRuangan from './pages/admin/KelolaPeminjamanRuangan'
+import KelolaProject from './pages/admin/KelolaProject'
 
 function App() {
   return (
@@ -101,6 +102,15 @@ function App() {
             element={
               <ProtectedAdminRoute>
                 <KelolaPeminjamanRuangan />
+              </ProtectedAdminRoute>
+            }
+          />
+
+          <Route
+            path="/admin/project"
+            element={
+              <ProtectedAdminRoute>
+                <KelolaProject />
               </ProtectedAdminRoute>
             }
           />
