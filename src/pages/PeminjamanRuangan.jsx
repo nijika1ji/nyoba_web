@@ -104,7 +104,6 @@ function PeminjamanRuangan() {
       .map((item) => ({
         start: item.jamMulai,
         end: item.jamSelesai,
-        kegiatan: item.keperluan,
         status: item.status,
       }))
   }, [jadwalList, form.ruanganId])
@@ -545,13 +544,12 @@ function PeminjamanRuangan() {
           </div>
 
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[700px] text-left">
+            <table className="w-full min-w-[560px] text-left">
               <thead className="bg-slate-50">
                 <tr className="text-slate-700">
                   <th className="px-6 py-4 font-semibold">Tanggal</th>
                   <th className="px-6 py-4 font-semibold">Jam</th>
                   <th className="px-6 py-4 font-semibold">Status</th>
-                  <th className="px-6 py-4 font-semibold">Kegiatan</th>
                 </tr>
               </thead>
 
@@ -569,19 +567,16 @@ function PeminjamanRuangan() {
                         {item.start} - {item.end}
                       </td>
                       <td className="px-6 py-4">
-                        <span className="inline-block rounded-full bg-amber-100 px-4 py-2 text-sm font-semibold uppercase text-amber-700">
-                          {item.status}
+                        <span className="inline-block rounded-full bg-blue-100 px-4 py-2 text-sm font-semibold uppercase text-blue-700">
+                          Digunakan
                         </span>
-                      </td>
-                      <td className="px-6 py-4 text-slate-700">
-                        {item.kegiatan}
                       </td>
                     </tr>
                   ))
                 ) : (
                   <tr>
                     <td
-                      colSpan="4"
+                      colSpan="3"
                       className="px-6 py-6 text-center text-slate-500"
                     >
                       Belum ada jadwal terisi pada tanggal ini.
