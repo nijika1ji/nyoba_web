@@ -65,17 +65,17 @@ function RoomScheduleCalendar({
 
   const statusStyle = {
     kosong: 'border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100',
-    pending: 'border-amber-200 bg-amber-50 text-amber-700',
+    pending: 'border-blue-200 bg-blue-50 text-blue-700',
     disetujui: 'border-blue-200 bg-blue-50 text-blue-700',
-    bentrok: 'border-red-200 bg-red-50 text-red-700',
+    bentrok: 'border-blue-200 bg-blue-50 text-blue-700',
     dipilih: 'border-indigo-200 bg-indigo-50 text-indigo-700',
   }
 
   const statusLabel = {
     kosong: 'Kosong',
-    pending: 'Pending',
-    disetujui: 'Disetujui',
-    bentrok: 'Bentrok',
+    pending: 'Digunakan',
+    disetujui: 'Digunakan',
+    bentrok: 'Digunakan',
     dipilih: 'Dipilih',
   }
 
@@ -124,11 +124,8 @@ function RoomScheduleCalendar({
           <span className="rounded-full bg-emerald-50 px-3 py-1 text-emerald-700">
             Kosong
           </span>
-          <span className="rounded-full bg-amber-50 px-3 py-1 text-amber-700">
-            Pending
-          </span>
           <span className="rounded-full bg-blue-50 px-3 py-1 text-blue-700">
-            Disetujui
+            Digunakan
           </span>
           <span className="rounded-full bg-indigo-50 px-3 py-1 text-indigo-700">
             Dipilih
@@ -139,7 +136,6 @@ function RoomScheduleCalendar({
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         {slots.map((slot) => {
           const status = getSlotStatus(slot)
-          const occupied = getOccupiedSlot(slot)
 
           return (
             <button
@@ -162,12 +158,6 @@ function RoomScheduleCalendar({
               <p className="mt-1 text-xs font-semibold uppercase tracking-wide">
                 {statusLabel[status]}
               </p>
-
-              {occupied?.kegiatan && (
-                <p className="mt-2 line-clamp-2 text-xs leading-5 opacity-80">
-                  {occupied.kegiatan}
-                </p>
-              )}
             </button>
           )
         })}
