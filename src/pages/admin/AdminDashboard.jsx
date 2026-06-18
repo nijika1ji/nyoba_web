@@ -79,7 +79,6 @@ function AdminDashboard() {
             to="/admin/project"
             action="Kelola Project"
             />
-            
         </div>
       </div>
     </div>

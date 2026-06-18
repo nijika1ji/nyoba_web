@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { apiRequest } from '../services/api'
+import RoomScheduleCalendar from '../components/RoomScheduleCalendar'
 
 function PeminjamanRuangan() {
   const today = new Date()
@@ -191,6 +192,14 @@ function PeminjamanRuangan() {
       ...(field === 'tanggal' ? { jamMulai: '', jamSelesai: '' } : {}),
       ...(field === 'ruanganId' ? { jamMulai: '', jamSelesai: '' } : {}),
       ...(field === 'jamMulai' ? { jamSelesai: '' } : {}),
+    }))
+  }
+
+  const handleCalendarSelect = (jamMulaiBaru, jamSelesaiBaru) => {
+    setForm((prev) => ({
+      ...prev,
+      jamMulai: jamMulaiBaru,
+      jamSelesai: jamSelesaiBaru,
     }))
   }
 
@@ -416,6 +425,14 @@ function PeminjamanRuangan() {
                   </div>
                 </div>
               </div>
+
+              <RoomScheduleCalendar
+                tanggal={form.tanggal}
+                occupiedSlots={occupiedSlots}
+                jamMulai={form.jamMulai}
+                jamSelesai={form.jamSelesai}
+                onSelectRange={handleCalendarSelect}
+              />
 
               <div className="grid gap-5 md:grid-cols-2">
                 <div>
